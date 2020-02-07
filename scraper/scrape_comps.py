@@ -21,9 +21,10 @@ def scrape_comps() -> List[Comp]:
 
 def _build_comp_from_team(team: Tag) -> Comp:
     name = team.find_next(class_='team-name-elipsis').get_text()
+    tier = team.find_next(class_='team-rank').get_text()
     characters = team.select('.team-characters > .characters-item')
     champions = list(map(_build_champion_from_character, characters))
-    return Comp(name, champions)
+    return Comp(name, champions, tier)
 
 
 def _build_champion_from_character(character: Tag) -> Champion:
@@ -36,4 +37,4 @@ if __name__ == '__main__':
     result = scrape_comps()
     for comp in result:
         championsLine = ', '.join([champion.name for champion in comp.champions])
-        print(f'Name: {comp.name}\nChampions: {championsLine}\n')
+        print(f'Tier: {comp.tier} {comp.name}\nChampions: {championsLine}\n')
