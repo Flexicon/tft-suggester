@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from common.models import Comp, Champion
+from common.db import connect_comps_collection
 from .helpers import _prepare_driver
 
 TFTCompsURL = r'https://tftactics.gg/tierlist/team-comps'
@@ -33,8 +34,19 @@ def _build_champion_from_character(character: Tag) -> Champion:
     return Champion(name, icon)
 
 
-if __name__ == '__main__':
+def _scrape_and_persist():
+    comps_collection = connect_comps_collection()
     result = scrape_comps()
+    print('Found {count} comps\n{separator}\n'.format(count=len(result), separator="-" * 15))
+
     for comp in result:
-        championsLine = ', '.join([champion.name for champion in comp.champions])
-        print(f'Tier: {comp.tier} {comp.name}\nChampions: {championsLine}\n')
+        champions_line = ', '.join([champion.name for champion in comp.champions])
+        print(f'Tier: {comp.tier}\nName: {comp.name}\nChampions: {champions_line}\n')
+
+    comps_collection.drop()
+    comps_collection.insert_many([comp.to_dict() for comp in result])
+    print('Saved latest ranking to db successfully!')
+
+
+if __name__ == '__main__':
+    _scrape_and_persist()
