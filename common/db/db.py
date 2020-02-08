@@ -1,20 +1,31 @@
 from pymongo import MongoClient
 from pymongo.collection import Collection
-from pymongo.database import Database
 
 
-def _connect() -> Database:
-    client = MongoClient('mongodb://root:pass@mongo:27017/')
-    return client.get_database('tft_suggester')
+class DB:
+    _instance = None
+    _connection = None
+    _database = None
 
+    def __init__(self):
+        self._connection = MongoClient('mongodb://root:pass@mongo:27017/')
+        self._database = self._connection.get_database('tft_suggester')
 
-def connect_champions_collection() -> Collection:
-    return _connect().get_collection('champions')
+    @classmethod
+    def connect(cls):
+        if cls._instance is None:
+            cls._instance = cls()
 
+    @classmethod
+    def disconnect(cls):
+        cls._connection.close()
+        cls._database = None
+        cls._instance = None
 
-def connect_items_collection() -> Collection:
-    return _connect().get_collection('items')
+    @classmethod
+    def get_instance(cls) -> 'DB':
+        cls.connect()
+        return cls._instance
 
-
-def connect_comps_collection() -> Collection:
-    return _connect().get_collection('comps')
+    def get_comps_collection(self) -> Collection:
+        return self._database.get_collection('comps')

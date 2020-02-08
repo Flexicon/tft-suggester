@@ -8,6 +8,9 @@ services:
 
   web:
     build: .
+    command: 'uvicorn api:app --host=0.0.0.0 --reload'
+    ports:
+      - "8000:8000"
     depends_on:
       - mongo
     volumes:
