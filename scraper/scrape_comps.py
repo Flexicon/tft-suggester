@@ -44,7 +44,7 @@ def _scrape_and_persist(collection: Collection):
         print(f'Tier: {comp.tier}\nName: {comp.name}\nChampions: {champions_line}\n')
 
     collection.drop()
-    collection.insert_many([comp.to_dict() for comp in result])
+    collection.insert_many([comp.dict() for comp in result])
     print('Saved latest ranking to db successfully!')
 
 

@@ -3,5 +3,5 @@ class Champion:
         self.name = name
         self.image = image
 
-    def to_dict(self):
+    def dict(self):
         return {"name": self.name, "image": self.image}

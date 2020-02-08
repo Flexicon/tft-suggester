@@ -9,7 +9,7 @@ class Comp:
         self.champions = champions if champions is not None else []
         self.tier = tier
 
-    def to_dict(self) -> dict:
+    def dict(self) -> dict:
         return {"name": self.name,
                 "tier": self.tier,
-                "champions": [champion.to_dict() for champion in self.champions]}
+                "champions": [c.dict() for c in self.champions]}
