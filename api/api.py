@@ -3,21 +3,21 @@ from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from api.handlers import get_comps_handler
+from api.handlers import get_comps_handler, get_champions_handler
 from common.db import DB
 
 app = FastAPI()
 
 
-class Champion(BaseModel):
+class ChampionResponse(BaseModel):
     name: str
     image: str
 
 
-class Comp(BaseModel):
+class CompResponse(BaseModel):
     name: str
     tier: str
-    champions: List[Champion]
+    champions: List[ChampionResponse]
 
 
 @app.on_event("startup")
@@ -35,6 +35,11 @@ def root():
     return {'msg': 'TFT Suggester API'}
 
 
-@app.get('/comps', response_model=List[Comp])
+@app.get('/comps', response_model=List[CompResponse])
 async def get_comps():
     return get_comps_handler(DB.get_instance().get_comps_collection())
+
+
+@app.get('/champions', response_model=List[ChampionResponse])
+async def get_champions():
+    return get_champions_handler(DB.get_instance().get_champions_collection())
