@@ -4,21 +4,19 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from pymongo.collection import Collection
 
-from common.models import Comp, Champion
+from common.models import Comp
 from common.db import DB
-from .helpers import _prepare_driver
+from .helpers import ScraperWebDriver, _build_champion_from_character
 
 TFTCompsURL = r'https://tftactics.gg/tierlist/team-comps'
 
 
 def scrape_comps() -> List[Comp]:
-    driver = _prepare_driver()
-    driver.get(TFTCompsURL)
-    html = driver.find_element_by_class_name('main').get_attribute('innerHTML')
-    teams = BeautifulSoup(html, 'html.parser').find_all('div', class_='team-portrait')
-    comps = list(map(_build_comp_from_team, teams))
-    driver.close()
-    return comps
+    with ScraperWebDriver() as driver:
+        html = driver.fetch_content_html(TFTCompsURL)
+        teams = BeautifulSoup(html, 'html.parser').find_all('div', class_='team-portrait')
+        comps = list(map(_build_comp_from_team, teams))
+        return comps
 
 
 def _build_comp_from_team(team: Tag) -> Comp:
@@ -27,12 +25,6 @@ def _build_comp_from_team(team: Tag) -> Comp:
     characters = team.select('.team-characters > .characters-item')
     champions = list(map(_build_champion_from_character, characters))
     return Comp(name, champions, tier)
-
-
-def _build_champion_from_character(character: Tag) -> Champion:
-    name = character['href'].split('/').pop().replace('_', ' ').title()
-    icon = character.find('img')['src']
-    return Champion(name, icon)
 
 
 def _scrape_and_persist(collection: Collection):

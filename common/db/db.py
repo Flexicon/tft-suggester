@@ -27,5 +27,11 @@ class DB:
         cls.connect()
         return cls._instance
 
+    def _get_collection(self, name: str):
+        return self._database.get_collection(name)
+
     def get_comps_collection(self) -> Collection:
-        return self._database.get_collection('comps')
+        return self._get_collection('comps')
+
+    def get_champions_collection(self) -> Collection:
+        return self._get_collection('champions')
