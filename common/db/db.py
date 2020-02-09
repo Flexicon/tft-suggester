@@ -3,31 +3,20 @@ from pymongo.collection import Collection
 
 
 class DB:
-    _instance = None
     _connection = None
     _database = None
 
-    def __init__(self):
-        self._connection = MongoClient('mongodb://root:pass@mongo:27017/')
-        self._database = self._connection.get_database('tft_suggester')
+    def connect(self, connection_url: str = 'mongodb://root:pass@mongo:27017/', db_name: str = 'tft_suggester') -> 'DB':
+        self._connection = MongoClient(connection_url)
+        self._database = self._connection.get_database(db_name)
+        return self
 
-    @classmethod
-    def connect(cls):
-        if cls._instance is None:
-            cls._instance = cls()
-
-    @classmethod
-    def disconnect(cls):
-        cls._connection.close()
-        cls._database = None
-        cls._instance = None
-
-    @classmethod
-    def get_instance(cls) -> 'DB':
-        cls.connect()
-        return cls._instance
+    def disconnect(self):
+        self._connection.close()
 
     def _get_collection(self, name: str):
+        if self._database is None:
+            raise ConnectionError('Database not connected. Make sure to run connect()')
         return self._database.get_collection(name)
 
     def get_comps_collection(self) -> Collection:

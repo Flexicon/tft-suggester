@@ -7,6 +7,7 @@ from api.handlers import get_comps_handler, get_champions_handler
 from common.db import DB
 
 app = FastAPI()
+db = DB()
 
 
 class ChampionResponse(BaseModel):
@@ -22,12 +23,12 @@ class CompResponse(BaseModel):
 
 @app.on_event("startup")
 async def startup():
-    DB.connect()
+    db.connect()
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    DB.disconnect()
+    db.disconnect()
 
 
 @app.get('/')
@@ -37,9 +38,9 @@ def root():
 
 @app.get('/comps', response_model=List[CompResponse])
 async def get_comps():
-    return get_comps_handler(DB.get_instance().get_comps_collection())
+    return get_comps_handler(db.get_comps_collection())
 
 
 @app.get('/champions', response_model=List[ChampionResponse])
 async def get_champions():
-    return get_champions_handler(DB.get_instance().get_champions_collection())
+    return get_champions_handler(db.get_champions_collection())

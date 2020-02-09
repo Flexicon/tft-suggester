@@ -31,4 +31,5 @@ def _scrape_and_persist(collection: Collection):
 
 
 if __name__ == '__main__':
-    _scrape_and_persist(DB.get_instance().get_champions_collection())
+    db = DB().connect()
+    _scrape_and_persist(db.get_champions_collection())
