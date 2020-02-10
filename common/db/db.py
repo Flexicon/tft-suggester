@@ -15,8 +15,7 @@ class DB:
         self._connection = MongoClient(connection_url,
                                        connectTimeoutMS=30000,
                                        socketTimeoutMS=None,
-                                       socketKeepAlive=True,
-                                       authSource='admin')
+                                       socketKeepAlive=True)
         self._database = self._connection.get_database()
         return self
 
