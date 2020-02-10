@@ -16,7 +16,7 @@ class DB:
 
     def _get_collection(self, name: str):
         if self._database is None:
-            raise ConnectionError('Database not connected. Make sure to run connect()')
+            raise ConnectionError('Database not connected. Make sure to run connect() first.')
         return self._database.get_collection(name)
 
     def get_comps_collection(self) -> Collection:

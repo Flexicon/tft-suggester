@@ -18,7 +18,7 @@ class ChampionResponse(BaseModel):
 class CompResponse(BaseModel):
     name: str
     tier: str
-    champions: List[ChampionResponse]
+    champions: List[ChampionResponse] = []
 
 
 @app.on_event("startup")
