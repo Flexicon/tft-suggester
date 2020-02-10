@@ -10,7 +10,7 @@ class DB:
 
     def connect(self, connection_url: str = None, db_name: str = None) -> 'DB':
         if connection_url is None:
-            connection_url = os.getenv('DB_URL')
+            connection_url = os.getenv('MONGODB_URI')
         if db_name is None:
             db_name = os.getenv('DB_NAME')
 
