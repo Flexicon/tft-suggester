@@ -1,3 +1,5 @@
+import os
+
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
@@ -6,7 +8,12 @@ class DB:
     _connection = None
     _database = None
 
-    def connect(self, connection_url: str = 'mongodb://root:pass@mongo:27017/', db_name: str = 'tft_suggester') -> 'DB':
+    def connect(self, connection_url: str = None, db_name: str = None) -> 'DB':
+        if connection_url is None:
+            connection_url = os.getenv('DB_URL')
+        if db_name is None:
+            db_name = os.getenv('DB_NAME')
+
         self._connection = MongoClient(connection_url)
         self._database = self._connection.get_database(db_name)
         return self

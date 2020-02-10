@@ -1,11 +1,13 @@
 from typing import List
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from pydantic import BaseModel
 
 from api.handlers import get_comps_handler, get_champions_handler
 from common.db import DB
 
+load_dotenv()
 app = FastAPI()
 db = DB()
 
