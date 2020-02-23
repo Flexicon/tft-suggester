@@ -14,6 +14,7 @@ class ScraperWebDriver:
         self.driver.implicitly_wait(5)
 
     def fetch_content_html(self, url: str, *, selector: str = '.main'):
+        print('Fetching html to scrape, please wait...')
         self.driver.get(url)
         return self.driver.find_element_by_css_selector(selector).get_attribute('innerHTML')
 
