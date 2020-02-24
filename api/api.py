@@ -1,8 +1,10 @@
+import os
 from typing import List
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from pydantic import BaseModel
+from starlette.middleware.cors import CORSMiddleware
 
 from api.handlers import get_comps_handler, get_champions_handler
 from common.db import DB
@@ -10,6 +12,14 @@ from common.db import DB
 load_dotenv()
 app = FastAPI()
 db = DB()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[os.getenv('CORS_SPA_ORIGIN', 'http://localhost:8080')],
+    allow_credentials=True,
+    allow_methods=['GET'],
+    allow_headers=['*'],
+)
 
 
 class ChampionResponse(BaseModel):
