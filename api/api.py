@@ -16,7 +16,6 @@ db = DB()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[os.getenv('CORS_SPA_ORIGIN', 'http://localhost:8080')],
-    allow_credentials=True,
     allow_methods=['GET'],
     allow_headers=['*'],
 )
