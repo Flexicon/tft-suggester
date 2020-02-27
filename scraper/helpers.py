@@ -1,3 +1,6 @@
+import os
+
+import requests
 from bs4.element import Tag
 from selenium import webdriver
 
@@ -26,6 +29,18 @@ class ScraperWebDriver:
 
 
 def _build_champion_from_character(character: Tag) -> Champion:
-    name = character['href'].split('/').pop().replace('_', ' ').title()
-    icon = character.find('img')['src']
+    img_tag = character.find('img')
+    name = img_tag['alt']
+    icon = img_tag['src']
     return Champion(name, icon)
+
+
+def _trigger_webhook_if_set():
+    data_fetched_webhook = os.getenv('DATA_FETCHED_WEBHOOK')
+    if not data_fetched_webhook:
+        return
+
+    response = requests.post(data_fetched_webhook)
+    response.raise_for_status()
+
+    print('Webhook triggered')
