@@ -1,4 +1,5 @@
 import os
+import re
 
 import requests
 from bs4.element import Tag
@@ -32,7 +33,12 @@ def _build_champion_from_character(character: Tag) -> Champion:
     img_tag = character.find('img')
     name = img_tag['alt']
     icon = img_tag['src']
-    return Champion(name, icon)
+    cost = _price_from_character_class(' '.join(character['class']))
+    return Champion(name, icon, cost)
+
+def _price_from_character_class(classes: str) -> int:
+    pattern = re.compile(r'\bc(\d+)\b')
+    return next(iter(pattern.findall(classes)), 0)
 
 
 def _trigger_webhook_if_set():

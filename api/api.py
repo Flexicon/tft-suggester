@@ -24,6 +24,7 @@ app.add_middleware(
 class ChampionResponse(BaseModel):
     name: str
     image: str
+    cost: int
 
 
 class CompResponse(BaseModel):

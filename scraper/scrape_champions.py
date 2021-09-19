@@ -23,7 +23,7 @@ def _scrape_and_persist(collection: Collection):
     print('Found {count} champions\n{separator}\n'.format(count=len(result), separator="-" * 15))
 
     for champion in result:
-        print(f'Name: {champion.name}\nImage: {champion.image}\n')
+        print(f'Name: {champion.name}\nImage: {champion.image}\nCost: {champion.cost}\n')
 
     collection.drop()
     collection.insert_many([comp.dict() for comp in result])
