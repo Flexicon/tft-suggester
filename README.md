@@ -2,22 +2,18 @@
 
 ### Dev
 
-To prepare the dev env on macOS, run the following in your terminal:
+Requirements:
+
+- Python 3.9.7+
+- Docker 20.10+
+
+To prepare the dev env, run the following in your terminal (only tested on macOS):
 
 ```
-$ make dev && source ./venv/bin/activate
+$ make dev && . ./venv/bin/activate
 ```
 
-_Note: Docker cli with Compose is required for the above make script_
+To run...
 
-To run the api server:
-
-```
-$ uvicorn api:app --host=0.0.0.0 --reload
-```
-
-To run the web scrapers:
-
-```
-$ python -m scraper
-```
+- the api server: `$ uvicorn api:app --host=0.0.0.0 --reload`
+- the web scrapers: `$ python -m scraper`
