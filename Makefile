@@ -5,3 +5,6 @@ dev:
 	pip install -r requirements.txt
 	cp .env.dist .env
 	sed -i "" 's/@mongo:/@127.0.0.1:/' .env
+
+test:
+	python -m pytest
