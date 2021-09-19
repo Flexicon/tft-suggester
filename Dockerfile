@@ -1,4 +1,4 @@
-FROM joyzoursky/python-chromedriver:3.7-selenium
+FROM joyzoursky/python-chromedriver:3.9-selenium
 
 WORKDIR /app
 
@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ['uvicorn', 'api:app', '--host=0.0.0.0']
+CMD ["uvicorn", "api:app", "--host=0.0.0.0"]
