@@ -30,6 +30,7 @@ class ChampionResponse(BaseModel):
 class CompResponse(BaseModel):
     name: str
     tier: str
+    playstyle: str
     champions: List[ChampionResponse] = []
 
 
