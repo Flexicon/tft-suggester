@@ -27,7 +27,7 @@ def _scrape_and_persist(collection: Collection):
 
     collection.drop()
     collection.insert_many([comp.dict() for comp in result])
-    print('Saved latest ranking to db successfully!')
+    print('Saved latest champions to db successfully!')
 
 
 if __name__ == '__main__':
