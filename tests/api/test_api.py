@@ -28,6 +28,7 @@ class ApiTest(unittest.TestCase):
                     {'_id': 'champ-id-1', 'name': 'Varus', 'image': 'varus.png', 'cost': 1},
                     {'_id': 'champ-id-2', 'name': 'Zyra', 'image': 'zyra.png', 'cost': 3},
                 ],
+                'playstyle': 'Slow Roll',
             },
         ]
         db_mock.get_comps_collection.return_value = collection_mock
@@ -38,6 +39,7 @@ class ApiTest(unittest.TestCase):
             'name': 'Inferno',
             'tier': 'S',
             'champions': [{'name': 'Varus', 'image': 'varus.png', 'cost': 1}, {'name': 'Zyra', 'image': 'zyra.png', 'cost': 3}],
+            'playstyle': 'Slow Roll',
         }])
 
     @patch('api.api.db')
