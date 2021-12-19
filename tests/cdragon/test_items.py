@@ -2,10 +2,20 @@ from typing import List
 
 import pytest
 import requests
+import requests_cache
 import responses
-from cdragon.base import BASE_URL
 
-from cdragon.items import ITEMS_URL, Item, get_items
+from cdragon.base import BASE_URL
+from cdragon.items import ITEMS_URL, Item, get_items, _parse_item_name
+
+
+@pytest.fixture(autouse=True)
+def clear_cache():
+    """Setup and clear the cdragon api cache before and after every test."""
+    session = requests_cache.CachedSession('cdragon_cache', expire_after=0)
+    session.remove_expired_responses(expire_after=0)
+    yield
+    session.remove_expired_responses(expire_after=0)
 
 
 @responses.activate
@@ -45,6 +55,15 @@ def test_get_items_ok():
     results = get_items()
     assert len(results) == len(expected_results)
     assert results == expected_results
+
+
+@pytest.mark.parametrize("name, expected", [
+    ("TFT_item_name_BladeOfTheRuinedKing", "Blade Of The Ruined King"),
+    ("tft_item_name_Set5Abomination_RadiantSpat", "Set 5 Abomination Radiant Spat"),
+])
+def test_parse_item_name(name, expected):
+    got = _parse_item_name(name)
+    assert got == expected, "result did not match expected value"
 
 
 def _dummy_items_response() -> List[dict]:

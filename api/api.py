@@ -6,7 +6,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 
-from api.handlers import get_comps_handler, get_champions_handler
+from api.handlers import get_comps_handler, get_champions_handler, get_items_handler
+from cdragon.items import Item
 from common.db import DB
 
 load_dotenv()
@@ -33,6 +34,8 @@ class CompResponse(BaseModel):
     playstyle: str
     champions: List[ChampionResponse] = []
 
+class ItemResponse(Item):
+    pass
 
 @app.on_event("startup")
 async def startup():
@@ -57,3 +60,7 @@ async def get_comps():
 @app.get('/champions', response_model=List[ChampionResponse])
 async def get_champions():
     return get_champions_handler(db.get_champions_collection())
+
+@app.get('/items', response_model=List[ItemResponse])
+async def get_items():
+    return get_items_handler()
