@@ -46,3 +46,4 @@ def _scrape_and_persist(collection: Collection):
 if __name__ == '__main__':
     db = DB().connect()
     _scrape_and_persist(db.get_comps_collection())
+    db.disconnect()

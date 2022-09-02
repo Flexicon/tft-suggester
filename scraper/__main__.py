@@ -8,3 +8,4 @@ if __name__ == '__main__':
     scrape_champions(db.get_champions_collection())
     scrape_comps(db.get_comps_collection())
     _trigger_webhook_if_set()
+    db.disconnect()
