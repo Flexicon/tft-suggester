@@ -9,7 +9,7 @@ from common.models import Champion
 
 
 class ScraperWebDriver:
-    def __init__(self):
+    def __init__(self) -> None:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--headless')
