@@ -11,5 +11,14 @@ dev:
 api:
 	uvicorn api:app --host=0.0.0.0 --reload
 
+scrape_all:
+	python -m scraper
+
+scrape_comps:
+	python -m scraper.scrape_comps
+
+scrape_champions:
+	python -m scraper.scrape_champions
+
 test:
 	python -m pytest
