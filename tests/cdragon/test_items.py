@@ -13,9 +13,9 @@ from cdragon.items import ITEMS_URL, Item, get_items, _parse_item_name
 def clear_cache():
     """Setup and clear the cdragon api cache before and after every test."""
     session = requests_cache.CachedSession('cdragon_cache', expire_after=0)
-    session.remove_expired_responses(expire_after=0)
+    session.cache.clear()
     yield
-    session.remove_expired_responses(expire_after=0)
+    session.cache.clear()
 
 
 @responses.activate
