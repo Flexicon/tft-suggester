@@ -17,7 +17,7 @@ class ScraperWebDriver:
         self.driver = webdriver.Chrome(options=chrome_options)
         self.driver.implicitly_wait(5)
 
-    def fetch_content_html(self, url: str, *, selector: str = '.main'):
+    def fetch_content_html(self, url: str, *, selector: str = '.main') -> str:
         print('Fetching html to scrape, please wait...')
         self.driver.get(url)
         return self.driver.find_element_by_css_selector(selector).get_attribute('innerHTML')
@@ -34,7 +34,8 @@ def _build_champion_from_character(character: Tag) -> Champion:
     name = img_tag['alt']
     icon = img_tag['src']
     cost = _price_from_character_class(' '.join(character['class']))
-    return Champion(name, icon, cost)
+    return Champion(name=name, image=icon, cost=cost)
+
 
 def _price_from_character_class(classes: str) -> int:
     pattern = re.compile(r'\bc(\d+)\b')

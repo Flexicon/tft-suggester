@@ -27,7 +27,7 @@ def _build_comp_from_team(team: Tag) -> Comp:
     characters = team.select('.team-characters > .characters-item')
     champions = list(map(_build_champion_from_character, characters))
 
-    return Comp(name, champions, tier, playstyle)
+    return Comp(name=name, champions=champions, tier=tier, playstyle=playstyle)
 
 
 def _scrape_and_persist(collection: Collection):
