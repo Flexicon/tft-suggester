@@ -12,7 +12,7 @@ class Item(BaseModel):
 
 
 class ItemRecommendation(BaseModel):
-    champion_name: str
+    champion: str
     items: List[Item] = None
 
 

@@ -44,7 +44,7 @@ def _build_item_recommendation(
 ) -> ItemRecommendation:
     item_tags = character.find_all(class_="characters-item")
     items = [_build_item(t) for t in item_tags]
-    return ItemRecommendation(champion_name=champion.name, items=items)
+    return ItemRecommendation(champion=champion.name, items=items)
 
 
 def _build_item(tag: Tag) -> Item:
@@ -66,7 +66,7 @@ def _scrape_and_persist(collection: Collection):
         for recommendation in comp.item_recommendations:
             if not recommendation.items:
                 continue
-            print(f"\tFor {recommendation.champion_name}:")
+            print(f"\tFor {recommendation.champion}:")
             print("\n".join([f"\t\t- {i.name}" for i in recommendation.items]))
 
         print("\n")
