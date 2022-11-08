@@ -40,7 +40,7 @@ def _build_champion_from_character(character: Tag) -> Champion:
 def _price_from_character_class(classes: str) -> int:
     pattern = re.compile(r'\bc(\d+)\b')
     matches = pattern.findall(classes)
-    return int(matches[0]) if len(matches) >= 1 else 0
+    return int(matches[0]) if matches else 0
 
 
 def _trigger_webhook_if_set():
