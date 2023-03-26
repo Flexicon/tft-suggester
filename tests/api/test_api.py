@@ -10,52 +10,72 @@ client = TestClient(app)
 
 
 class ApiTest(unittest.TestCase):
-
     def test_get_root(self):
-        response = client.get('/')
+        response = client.get("/")
         self.assertEqual(HTTP_200_OK, response.status_code)
         self.assertDictEqual(response.json(), {"msg": "TFT Suggester API"})
 
-    @patch('api.api.db')
+    @patch("api.api.db")
     def test_get_comps(self, db_mock):
         collection_mock = Mock()
         collection_mock.find.return_value = [
             {
-                '_id': 'comp-id-1',
-                'name': 'Inferno',
-                'tier': 'S',
-                'champions': [
-                    {'_id': 'champ-id-1', 'name': 'Varus', 'image': 'varus.png', 'cost': 1},
-                    {'_id': 'champ-id-2', 'name': 'Zyra', 'image': 'zyra.png', 'cost': 3},
+                "_id": "comp-id-1",
+                "name": "Inferno",
+                "tier": "S",
+                "champions": [
+                    {
+                        "_id": "champ-id-1",
+                        "name": "Varus",
+                        "image": "varus.png",
+                        "cost": 1,
+                    },
+                    {
+                        "_id": "champ-id-2",
+                        "name": "Zyra",
+                        "image": "zyra.png",
+                        "cost": 3,
+                    },
                 ],
-                'playstyle': 'Slow Roll',
-                'item_recommendations': [],
+                "playstyle": "Slow Roll",
+                "item_recommendations": [],
             },
         ]
         db_mock.get_comps_collection.return_value = collection_mock
 
-        response = client.get('/comps')
+        response = client.get("/comps")
         self.assertEqual(HTTP_200_OK, response.status_code)
-        self.assertEqual(response.json(), [{
-            'name': 'Inferno',
-            'tier': 'S',
-            'champions': [{'name': 'Varus', 'image': 'varus.png', 'cost': 1}, {'name': 'Zyra', 'image': 'zyra.png', 'cost': 3}],
-            'playstyle': 'Slow Roll',
-            'item_recommendations': [],
-        }])
+        self.assertEqual(
+            response.json(),
+            [
+                {
+                    "name": "Inferno",
+                    "tier": "S",
+                    "champions": [
+                        {"name": "Varus", "image": "varus.png", "cost": 1},
+                        {"name": "Zyra", "image": "zyra.png", "cost": 3},
+                    ],
+                    "playstyle": "Slow Roll",
+                    "item_recommendations": [],
+                }
+            ],
+        )
 
-    @patch('api.api.db')
+    @patch("api.api.db")
     def test_get_champions(self, db_mock):
         collection_mock = Mock()
         collection_mock.find.return_value = [
-            {'_id': 'champ-id-1', 'name': 'Varus', 'image': 'varus.png', 'cost': 1},
-            {'_id': 'champ-id-2', 'name': 'Zyra', 'image': 'zyra.png', 'cost': 3},
+            {"_id": "champ-id-1", "name": "Varus", "image": "varus.png", "cost": 1},
+            {"_id": "champ-id-2", "name": "Zyra", "image": "zyra.png", "cost": 3},
         ]
         db_mock.get_champions_collection.return_value = collection_mock
 
-        response = client.get('/champions')
+        response = client.get("/champions")
         self.assertEqual(HTTP_200_OK, response.status_code)
-        self.assertEqual(response.json(), [
-            {'name': 'Varus', 'image': 'varus.png', 'cost': 1},
-            {'name': 'Zyra', 'image': 'zyra.png', 'cost': 3},
-        ])
+        self.assertEqual(
+            response.json(),
+            [
+                {"name": "Varus", "image": "varus.png", "cost": 1},
+                {"name": "Zyra", "image": "zyra.png", "cost": 3},
+            ],
+        )
