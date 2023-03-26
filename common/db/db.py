@@ -32,3 +32,6 @@ class DB:
 
     def get_champions_collection(self) -> Collection:
         return self._get_collection('champions')
+
+    def get_items_collection(self) -> Collection:
+        return self._get_collection('items')

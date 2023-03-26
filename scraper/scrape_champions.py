@@ -18,7 +18,7 @@ def scrape_champions() -> List[Champion]:
         return champions
 
 
-def _scrape_and_persist(collection: Collection):
+def scrape_and_persist(collection: Collection):
     result = scrape_champions()
     print('Found {count} champions\n{separator}\n'.format(count=len(result), separator="-" * 15))
 
@@ -32,5 +32,5 @@ def _scrape_and_persist(collection: Collection):
 
 if __name__ == '__main__':
     db = DB().connect()
-    _scrape_and_persist(db.get_champions_collection())
+    scrape_and_persist(db.get_champions_collection())
     db.disconnect()

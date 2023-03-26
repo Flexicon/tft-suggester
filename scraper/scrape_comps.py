@@ -54,7 +54,7 @@ def _build_item(tag: Tag) -> Item:
     return Item(name=name, image=icon)
 
 
-def _scrape_and_persist(collection: Collection):
+def scrape_and_persist(collection: Collection):
     result = scrape_comps()
     print(f"Found {len(result)} comps\n{'-' * 15}\n")
 
@@ -78,5 +78,5 @@ def _scrape_and_persist(collection: Collection):
 
 if __name__ == "__main__":
     db = DB().connect()
-    _scrape_and_persist(db.get_comps_collection())
+    scrape_and_persist(db.get_comps_collection())
     db.disconnect()
