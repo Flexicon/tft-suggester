@@ -6,9 +6,8 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from api.handlers import get_comps_handler, get_champions_handler, get_items_handler
-from cdragon.items import Item as CDragonItem
 from common.db import DB
-from common.models import Champion, Comp
+from common.models import Champion, Comp, CompositeItem
 
 load_dotenv()
 app = FastAPI()
@@ -30,7 +29,7 @@ class CompResponse(Comp):
     pass
 
 
-class ItemResponse(CDragonItem):
+class ItemResponse(CompositeItem):
     pass
 
 
@@ -61,4 +60,4 @@ async def get_champions():
 
 @app.get("/items", response_model=List[ItemResponse])
 async def get_items():
-    return get_items_handler()
+    return get_items_handler(db.get_items_collection())

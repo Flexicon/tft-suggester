@@ -1,7 +1,5 @@
-from typing import List
-
-from cdragon.items import Item, get_items
+from pymongo.collection import Collection
 
 
-def handler() -> List[Item]:
-    return get_items()
+def handler(items: Collection):
+    return list(items.find())
