@@ -12,6 +12,7 @@ Selector = ".mobile-items .item"
 
 NameReplacements = {
     "A D M I N": "A.D.M.I.N.",
+    "Zzrot": "Zz'Rot",
 }
 NameApostrophes = [
     "Archangels",
