@@ -1,0 +1,6 @@
+.git
+.github
+.pytest_cache
+venv/
+.env
+cdragon_cache.sqlite
