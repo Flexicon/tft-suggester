@@ -1,0 +1,12 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 * * * *'
+
+name: worker
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - run: 'echo Hello World'
