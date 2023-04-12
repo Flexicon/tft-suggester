@@ -31,4 +31,5 @@ jobs:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
           docker run -e DATA_FETCHED_WEBHOOK -e DB_NAME -e MONGODB_URI \
+            -v /dev/shm:/dev/shm \
             --rm ${{ env.LATEST_TAG }} python3 -m scraper
