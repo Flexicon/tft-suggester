@@ -5,6 +5,7 @@ from scraper.scrape_comps import scrape_and_persist as scrape_comps
 from scraper.scrape_items import scrape_and_persist as scrape_items
 
 if __name__ == '__main__':
+    print("Running scraper 🕷️")
     db = DB().connect()
     scrape_champions(db.get_champions_collection())
     scrape_comps(db.get_comps_collection())
