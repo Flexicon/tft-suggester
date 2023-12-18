@@ -10,7 +10,7 @@ Requirements:
 To prepare the dev env, run the following in your terminal (only tested on macOS):
 
 ```
-$ make dev && . ./venv/bin/activate
+make dev && . ./venv/bin/activate
 ```
 
 To run...
