@@ -18,6 +18,9 @@ jobs:
       packages: write
       id-token: write
     steps:
+      - name: Downcase image name
+        run: |
+          echo "IMAGE_NAME=${IMAGE_NAME@L}" >>${GITHUB_ENV}
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Log in to GHCR
@@ -42,6 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build_image
     steps:
+      - name: Downcase image name
+        run: |
+          echo "IMAGE_NAME=${IMAGE_NAME@L}" >>${GITHUB_ENV}
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run worker
