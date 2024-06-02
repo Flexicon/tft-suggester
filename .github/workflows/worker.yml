@@ -9,7 +9,7 @@ env:
   LATEST_TAG: docker.io/flexicon/tft-suggester:latest
 
 jobs:
-  collect_data:
+  build_image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,6 +24,12 @@ jobs:
           push: false
           load: true
           tags: ${{ env.LATEST_TAG }}
+
+  collect_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Run worker
         uses: nick-fields/retry@v3
         env:
@@ -38,4 +44,3 @@ jobs:
             docker run -e DATA_FETCHED_WEBHOOK -e DB_NAME -e MONGODB_URI \
               -v /dev/shm:/dev/shm \
               --rm ${{ env.LATEST_TAG }} python3 -m scraper
-
