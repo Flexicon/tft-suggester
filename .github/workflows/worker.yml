@@ -21,8 +21,7 @@ jobs:
           context: .
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          push: false
-          load: true
+          push: true
           tags: ${{ env.LATEST_TAG }}
 
   collect_data:
