@@ -36,7 +36,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: true
-          tags: ${{ env.LATEST_TAG }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ env.LATEST_TAG }}
 
   collect_data:
     runs-on: ubuntu-latest
