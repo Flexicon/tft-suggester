@@ -7,8 +7,7 @@ name: worker
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  LATEST_TAG: latest
+  IMAGE_NAME: ${{ github.repository }}/worker
 
 jobs:
   build_image:
@@ -39,7 +38,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ env.LATEST_TAG }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
   collect_data:
     runs-on: ubuntu-latest
@@ -63,4 +62,4 @@ jobs:
           command: |
             docker run -e DATA_FETCHED_WEBHOOK -e DB_NAME -e MONGODB_URI \
               -v /dev/shm:/dev/shm \
-              --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ env.LATEST_TAG }} python3 -m scraper
+              --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} python3 -m scraper
