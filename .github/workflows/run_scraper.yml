@@ -1,0 +1,35 @@
+name: Run a specific scraper
+
+on:
+  workflow_call:
+    inputs:
+      scraper:
+        required: true
+        type: string
+      image_name:
+        required: true
+        type: string
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Downcase image name
+        run: |
+          echo "IMAGE_NAME=${IMAGE_NAME@L}" >>${GITHUB_ENV}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run worker
+        uses: nick-fields/retry@v3
+        env:
+          DATA_FETCHED_WEBHOOK: ${{ secrets.DATA_FETCHED_WEBHOOK }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        with:
+          timeout_minutes: 3
+          max_attempts: 3
+          retry_on: error
+          command: |
+            docker run -e DATA_FETCHED_WEBHOOK -e DB_NAME -e MONGODB_URI \
+              -v /dev/shm:/dev/shm \
+              --rm ${{ inputs.image_name }} python3 -m scraper.${{ inputs.scraper }}

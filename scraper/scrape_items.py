@@ -97,6 +97,7 @@ def scrape_and_persist(collection: Collection):
 
 
 if __name__ == "__main__":
+    print("Scraping Items 🕷️")
     db = DB().connect()
     scrape_and_persist(db.get_items_collection())
     db.disconnect()
