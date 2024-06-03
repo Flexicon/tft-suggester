@@ -77,6 +77,7 @@ def scrape_and_persist(collection: Collection):
 
 
 if __name__ == "__main__":
+    print("Scraping Comps 🕷️")
     db = DB().connect()
     scrape_and_persist(db.get_comps_collection())
     db.disconnect()
