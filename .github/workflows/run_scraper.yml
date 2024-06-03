@@ -19,7 +19,6 @@ jobs:
       - name: Run worker
         uses: nick-fields/retry@v3
         env:
-          DATA_FETCHED_WEBHOOK: ${{ secrets.DATA_FETCHED_WEBHOOK }}
           DB_NAME: ${{ secrets.DB_NAME }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         with:
@@ -27,6 +26,6 @@ jobs:
           max_attempts: 3
           retry_on: error
           command: |
-            docker run -e DATA_FETCHED_WEBHOOK -e DB_NAME -e MONGODB_URI \
+            docker run -e DB_NAME -e MONGODB_URI \
               -v /dev/shm:/dev/shm \
               --rm ${{ inputs.image_name }} python3 -m scraper.${{ inputs.scraper }}
