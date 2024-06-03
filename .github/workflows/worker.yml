@@ -41,16 +41,9 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
   scrape_champions:
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/run_scraper.yml
     needs: build_image
-    steps:
-      - name: Downcase image name
-        run: |
-          echo "IMAGE_NAME=${IMAGE_NAME@L}" >>${GITHUB_ENV}
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run worker
-        uses: ./.github/workflows/run_scraper.yml
-        with:
-          scraper: scrape_champions
-          image_name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+    secrets: inherit
+    with:
+      scraper: scrape_champions
+      image_name: ghcr.io/${{ github.repository }}/worker
