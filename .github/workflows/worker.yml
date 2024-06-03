@@ -62,12 +62,12 @@ jobs:
       image_name: ghcr.io/flexicon/tft-suggester/worker
 
   trigger_webhook:
-    uses: ./.github/workflows/run_scraper.yml
+    runs-on: ubuntu-latest
     needs:
       - scrape_champions
       - scrape_comps
       - scrape_items
-    secrets: inherit
-    with:
-      scraper: trigger_webhook
-      image_name: ghcr.io/flexicon/tft-suggester/worker
+    steps:
+      - name: curl
+        run: |
+          curl -X POST ${{ secrets.DATA_FETCHED_WEBHOOK }}
