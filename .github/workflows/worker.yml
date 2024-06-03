@@ -60,3 +60,14 @@ jobs:
     with:
       scraper: scrape_items
       image_name: ghcr.io/flexicon/tft-suggester/worker
+
+  trigger_webhook:
+    uses: ./.github/workflows/run_scraper.yml
+    needs:
+      - scrape_champions
+      - scrape_comps
+      - scrape_items
+    secrets: inherit
+    with:
+      scraper: trigger_webhook
+      image_name: ghcr.io/flexicon/tft-suggester/worker
