@@ -12,7 +12,7 @@ on:
 
 jobs:
   run_scraper:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.image_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,6 +27,4 @@ jobs:
           max_attempts: 3
           retry_on: error
           command: |
-            docker run -e DATA_FETCHED_WEBHOOK -e DB_NAME -e MONGODB_URI \
-              -v /dev/shm:/dev/shm \
-              --rm ${{ inputs.image_name }} python3 -m scraper.${{ inputs.scraper }}
+            python3 -m scraper.${{ inputs.scraper }}
