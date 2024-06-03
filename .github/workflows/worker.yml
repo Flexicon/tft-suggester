@@ -44,3 +44,19 @@ jobs:
     with:
       scraper: scrape_champions
       image_name: ghcr.io/flexicon/tft-suggester/worker
+
+  scrape_comps:
+    uses: ./.github/workflows/run_scraper.yml
+    needs: build_image
+    secrets: inherit
+    with:
+      scraper: scrape_comps
+      image_name: ghcr.io/flexicon/tft-suggester/worker
+
+  scrape_items:
+    uses: ./.github/workflows/run_scraper.yml
+    needs: build_image
+    secrets: inherit
+    with:
+      scraper: scrape_items
+      image_name: ghcr.io/flexicon/tft-suggester/worker
