@@ -11,12 +11,9 @@ on:
         type: string
 
 jobs:
-  triage:
+  run_scraper:
     runs-on: ubuntu-latest
     steps:
-      - name: Downcase image name
-        run: |
-          echo "IMAGE_NAME=${IMAGE_NAME@L}" >>${GITHUB_ENV}
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run worker

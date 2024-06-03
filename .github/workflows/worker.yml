@@ -7,7 +7,7 @@ name: worker
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/worker
+  IMAGE_NAME: flexicon/tft-suggester/worker
 
 jobs:
   build_image:
@@ -17,9 +17,6 @@ jobs:
       packages: write
       id-token: write
     steps:
-      - name: Downcase image name
-        run: |
-          echo "IMAGE_NAME=${IMAGE_NAME@L}" >>${GITHUB_ENV}
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Log in to GHCR
@@ -46,4 +43,4 @@ jobs:
     secrets: inherit
     with:
       scraper: scrape_champions
-      image_name: ghcr.io/${{ github.repository }}/worker
+      image_name: ghcr.io/flexicon/tft-suggester/worker
