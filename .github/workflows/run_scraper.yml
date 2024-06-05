@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run worker
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@3f757583fb1b1f940bc8ef4bf4734c8dc02a5847
         env:
           DB_NAME: ${{ secrets.DB_NAME }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
