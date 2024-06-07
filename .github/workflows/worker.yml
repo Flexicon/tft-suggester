@@ -81,7 +81,7 @@ jobs:
     steps:
       - uses: actions/delete-package-versions@0635864898b476b1b4ba530fc7854286f20b360c
         with:
-          package-name: 'worker'
+          package-name: 'tft-suggester/worker'
           package-type: 'container'
           min-versions-to-keep: 5
           delete-only-untagged-versions: 'true'
