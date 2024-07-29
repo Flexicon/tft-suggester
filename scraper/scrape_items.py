@@ -21,6 +21,7 @@ NameApostrophes = [
     "Dragons",
     "Giants",
     "Guinsoos",
+    "Nashors",
     "Protectors",
     "Rabadons",
     "Randuins",
