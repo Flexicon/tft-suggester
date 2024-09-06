@@ -27,6 +27,7 @@ NameApostrophes = [
     "Randuins",
     "Rascals",
     "Runaans",
+    "Steraks",
     "Tacticians",
     "Thiefs",
     "Titans",
