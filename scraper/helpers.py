@@ -14,7 +14,7 @@ class ScraperWebDriver:
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--headless')
         self.driver = webdriver.Chrome(options=chrome_options)
-        self.driver.set_page_load_timeout(15)
+        self.driver.set_page_load_timeout(10)
         self.driver.implicitly_wait(5)
 
     def fetch_content_html(self, url: str, *, selector: str = '.main') -> str:
