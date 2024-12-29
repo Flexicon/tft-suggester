@@ -17,7 +17,7 @@ def scrape_comps() -> List[Comp]:
         teams = BeautifulSoup(html, "html.parser").find_all(
             "div", class_="team-portrait"
         )
-        comps = list(map(_build_comp_from_team, teams))
+        comps = [_build_comp_from_team(driver, t) for t in teams]
     return comps
 
 

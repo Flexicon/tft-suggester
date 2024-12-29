@@ -9,6 +9,8 @@ from selenium.common.exceptions import TimeoutException
 
 from common.models import Champion
 
+traits_cache = {}
+
 
 class ScraperWebDriver:
     def __init__(self) -> None:
@@ -45,13 +47,23 @@ def _build_champion_from_character(
 
 
 def _scrape_traits_for_character(driver: ScraperWebDriver, character: Tag) -> list[str]:
+    href = character["href"]
+    url = f"https://tftactics.gg{href}" if href.startswith("/") else href
+    if url in traits_cache:
+        print(f"Using cached traits for: {url}")
+        return traits_cache[url]
+
     try:
-        href = character["href"]
-        url = f"https://tftactics.gg{href}" if href.startswith("/") else href
         html = driver.fetch_content_html(url)
-        return _extract_traits_from_character_html(html)
+        traits = traits_cache[url] = _extract_traits_from_character_html(html)
+        return traits
     except TimeoutException as err:
-        print(f"Failed to scrape traits for champion: {href}\n{err}")
+        print(f"Failed to scrape traits for champion due to timeout: {url}\n{err}")
+        return []
+    except Exception as err:
+        print(
+            f"An unexpected error occurred while scraping traits for champion: {url}\n{err}"
+        )
         return []
 
 
