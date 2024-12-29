@@ -1,15 +1,16 @@
-## TFT Suggester Backend
+# TFT Suggester Backend
 
-### Dev
+## Local Development
 
 Requirements:
 
 - Python 3.9.7+
 - Docker 20.10+
 
-To prepare the dev env, run the following in your terminal (only tested on macOS):
+To prepare the development environment,
+run the following in your terminal (only tested on macOS):
 
-```
+```bash
 make dev && . ./venv/bin/activate
 ```
 
