@@ -39,8 +39,8 @@ NameApostrophes = [
 def scrape_items() -> List[CompositeItem]:
     with ScraperWebDriver() as driver:
         html = driver.fetch_content_html(ScrapeURL, selector="#content")
-        items = BeautifulSoup(html, "html.parser").select(Selector)
-        return list(map(_build_composite_item, items))
+    items = BeautifulSoup(html, "html.parser").select(Selector)
+    return list(map(_build_composite_item, items))
 
 
 def _build_composite_item(div: Tag) -> CompositeItem:

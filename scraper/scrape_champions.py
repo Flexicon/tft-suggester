@@ -14,8 +14,8 @@ def scrape_champions() -> List[Champion]:
     with ScraperWebDriver() as driver:
         html = driver.fetch_content_html(TFTChampionsURL)
         characters = BeautifulSoup(html, 'html.parser').select('.characters-list > .characters-item')
-        champions = list(map(_build_champion_from_character, characters))
-        return champions
+        champions = [_build_champion_from_character(driver, c) for c in characters]
+    return champions
 
 
 def scrape_and_persist(collection: Collection):
@@ -23,7 +23,7 @@ def scrape_and_persist(collection: Collection):
     print('Found {count} champions\n{separator}\n'.format(count=len(result), separator="-" * 15))
 
     for champion in result:
-        print(f'Name: {champion.name}\nImage: {champion.image}\nCost: {champion.cost}\n')
+        print(f'Name: {champion.name}\nImage: {champion.image}\nCost: {champion.cost}\nTraits: {champion.traits}\n')
 
     collection.drop()
     collection.insert_many([comp.dict() for comp in result])

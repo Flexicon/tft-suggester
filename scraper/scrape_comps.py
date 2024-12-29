@@ -18,16 +18,16 @@ def scrape_comps() -> List[Comp]:
             "div", class_="team-portrait"
         )
         comps = list(map(_build_comp_from_team, teams))
-        return comps
+    return comps
 
 
-def _build_comp_from_team(team: Tag) -> Comp:
+def _build_comp_from_team(driver: ScraperWebDriver, team: Tag) -> Comp:
     playstyle = team.find_next(class_="team-playstyle").get_text()
     name = team.find_next(class_="team-name-elipsis").get_text().replace(playstyle, "")
 
     tier = team.find_next(class_="team-rank").get_text()
     characters = team.select(".team-characters > .characters-item")
-    champions = list(map(_build_champion_from_character, characters))
+    champions = [_build_champion_from_character(driver, c) for c in characters]
     items = list(map(_build_item_recommendation, characters, champions))
 
     return Comp(
