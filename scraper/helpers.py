@@ -46,9 +46,12 @@ def _build_champion_from_character(
     return Champion(name=name, image=icon, cost=cost, traits=traits)
 
 
-def _scrape_traits_for_character(driver: ScraperWebDriver, character: Tag) -> list[str]:
+def _scrape_traits_for_character(
+    driver: ScraperWebDriver, character: Tag, *, attempt=1
+) -> list[str]:
     href = character["href"]
     url = f"https://tftactics.gg{href}" if href.startswith("/") else href
+
     if url in traits_cache:
         print(f"Using cached traits for: {url}")
         return traits_cache[url]
@@ -58,7 +61,11 @@ def _scrape_traits_for_character(driver: ScraperWebDriver, character: Tag) -> li
         traits = traits_cache[url] = _extract_traits_from_character_html(html)
         return traits
     except TimeoutException as err:
-        print(f"Failed to scrape traits for champion due to timeout: {url}\n{err}")
+        if attempt < 3:
+            return _scrape_traits_for_character(driver, character, attempt=attempt + 1)
+        print(
+            f"Failed to scrape traits after 3 attempts for champion due to timeout: {url}\n{err}"
+        )
         return []
     except Exception as err:
         print(
