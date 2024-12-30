@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
+from tenacity import Retrying, RetryError, retry_if_exception_type, stop_after_attempt
 
 from common.models import Champion
 
@@ -46,9 +47,7 @@ def _build_champion_from_character(
     return Champion(name=name, image=icon, cost=cost, traits=traits)
 
 
-def _scrape_traits_for_character(
-    driver: ScraperWebDriver, character: Tag, *, attempt=1
-) -> list[str]:
+def _scrape_traits_for_character(driver: ScraperWebDriver, character: Tag) -> list[str]:
     href = character["href"]
     url = f"https://tftactics.gg{href}" if href.startswith("/") else href
 
@@ -57,21 +56,15 @@ def _scrape_traits_for_character(
         return traits_cache[url]
 
     try:
-        html = driver.fetch_content_html(url)
-        traits = traits_cache[url] = _extract_traits_from_character_html(html)
-        return traits
-    except TimeoutException as err:
-        if attempt < 3:
-            return _scrape_traits_for_character(driver, character, attempt=attempt + 1)
-        print(
-            f"Failed to scrape traits after 3 attempts for champion due to timeout: {url}\n{err}"
-        )
-        return []
-    except Exception as err:
-        print(
-            f"An unexpected error occurred while scraping traits for champion: {url}\n{err}"
-        )
-        return []
+        for attempt in Retrying(
+            stop=stop_after_attempt(3), retry=retry_if_exception_type(TimeoutException)
+        ):
+            with attempt:
+                html = driver.fetch_content_html(url)
+                traits = traits_cache[url] = _extract_traits_from_character_html(html)
+    except RetryError:
+        traits = []
+    return traits
 
 
 def _extract_traits_from_character_html(html: str) -> list[str]:
