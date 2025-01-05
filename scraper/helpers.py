@@ -7,8 +7,6 @@ from bs4.element import Tag
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from tenacity import (
-    Retrying,
-    RetryError,
     retry,
     retry_if_exception_type,
     stop_after_attempt,
