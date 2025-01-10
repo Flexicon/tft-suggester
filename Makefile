@@ -20,5 +20,8 @@ scrape_comps:
 scrape_champions:
 	python -m scraper.scrape_champions
 
+scrape_items:
+	python -m scraper.scrape_items
+
 test:
 	python -m pytest
