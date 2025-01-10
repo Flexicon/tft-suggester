@@ -1,3 +1,5 @@
+import requests
+
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
@@ -6,28 +8,29 @@ from pymongo.collection import Collection
 
 from common.models import Champion, Comp, Item, ItemRecommendation
 from common.db import DB
-from .helpers import ScraperWebDriver, _build_champion_from_character
+from .helpers import _build_champion_from_character
 
 TFTCompsURL = r"https://tftactics.gg/tierlist/team-comps"
 
 
 def scrape_comps() -> List[Comp]:
-    with ScraperWebDriver() as driver:
-        html = driver.fetch_content_html(TFTCompsURL)
-        teams = BeautifulSoup(html, "html.parser").find_all(
-            "div", class_="team-portrait"
-        )
-        comps = [_build_comp_from_team(driver, t) for t in teams]
-    return comps
+    print(f"Fetching comps from: {TFTCompsURL}")
+    res = requests.get(TFTCompsURL)
+    res.raise_for_status()
+
+    teams = BeautifulSoup(res.text, "html.parser").find_all(
+        "div", class_="team-portrait"
+    )
+    return [_build_comp_from_team(t) for t in teams]
 
 
-def _build_comp_from_team(driver: ScraperWebDriver, team: Tag) -> Comp:
+def _build_comp_from_team(team: Tag) -> Comp:
     playstyle = team.find_next(class_="team-playstyle").get_text()
     name = team.find_next(class_="team-name-elipsis").get_text().replace(playstyle, "")
 
     tier = team.find_next(class_="team-rank").get_text()
     characters = team.select(".team-characters > .characters-item")
-    champions = [_build_champion_from_character(driver, c) for c in characters]
+    champions = [_build_champion_from_character(c) for c in characters]
     items = list(map(_build_item_recommendation, characters, champions))
 
     return Comp(
