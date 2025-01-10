@@ -1,3 +1,5 @@
+import requests
+
 from typing import List
 
 from bs4 import BeautifulSoup, Tag
@@ -5,7 +7,6 @@ from pymongo.collection import Collection
 
 from common.models import CompositeItem, Item
 from common.db import DB
-from .helpers import ScraperWebDriver
 
 ScrapeURL = r"https://www.mobafire.com/teamfight-tactics/items-cheatsheet"
 Selector = ".mobile-items .item"
@@ -37,9 +38,11 @@ NameApostrophes = [
 
 
 def scrape_items() -> List[CompositeItem]:
-    with ScraperWebDriver() as driver:
-        html = driver.fetch_content_html(ScrapeURL, selector="#content")
-    items = BeautifulSoup(html, "html.parser").select(Selector)
+    print(f"Fetching items from: {ScrapeURL}")
+    res = requests.get(ScrapeURL)
+    res.raise_for_status()
+
+    items = BeautifulSoup(res.text, "html.parser").select(Selector)
     return list(map(_build_composite_item, items))
 
 
