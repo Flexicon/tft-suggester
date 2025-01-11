@@ -6,9 +6,6 @@ on:
       scraper:
         required: true
         type: string
-      image_name:
-        required: true
-        type: string
 
 jobs:
   run_scraper:
@@ -16,6 +13,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
       - name: Run worker
         uses: nick-fields/retry@3f757583fb1b1f940bc8ef4bf4734c8dc02a5847
         env:
@@ -26,6 +28,4 @@ jobs:
           max_attempts: 10
           retry_on: error
           command: |
-            docker run -e DB_NAME -e MONGODB_URI \
-              -v /dev/shm:/dev/shm \
-              --rm ${{ inputs.image_name }} python3 -m scraper.${{ inputs.scraper }}
+            python -m scraper.${{ inputs.scraper }}
