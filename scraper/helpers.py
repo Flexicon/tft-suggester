@@ -1,5 +1,6 @@
 import os
 import re
+from typing import cast
 
 import requests
 from bs4 import BeautifulSoup
@@ -12,15 +13,19 @@ traits_cache = {}
 
 def _build_champion_from_character(character: Tag) -> Champion:
     traits = _scrape_traits_for_character(character)
-    img_tag = character.find("img")
-    name = img_tag["alt"]
-    icon = img_tag["src"]
+    if not (img_tag := character.find("img")):
+        raise ValueError("Character has no <img> tag")
+
+    img_tag = cast(Tag, img_tag)
+    name = str(img_tag["alt"])
+    icon = str(img_tag["src"])
     cost = _price_from_character_class(" ".join(character["class"]))
+
     return Champion(name=name, image=icon, cost=cost, traits=traits)
 
 
 def _scrape_traits_for_character(character: Tag) -> list[str]:
-    href = character["href"]
+    href = str(character["href"])
     url = f"https://tftactics.gg{href}" if href.startswith("/") else href
 
     if url in traits_cache:
@@ -41,10 +46,12 @@ def _scrape_traits_for_character(character: Tag) -> list[str]:
 def _extract_traits_from_character_html(html: str) -> list[str]:
     selector = ".ability-description-name"
     ability_tags = BeautifulSoup(html, "html.parser").select(selector)
+
+    # TODO: Better handling for ability tags when elements are missing in html
     return [
-        tag.find("h2").get_text()
+        tag.find("h2").get_text()  # type: ignore
         for tag in ability_tags
-        if tag.find("h4").get_text().lower() not in ["active", "passive"]
+        if tag.find("h4").get_text().lower() not in ["active", "passive"]  # type: ignore
     ]
 
 
