@@ -13,10 +13,7 @@ traits_cache = {}
 
 def build_champion_from_character(character: Tag) -> Champion:
     traits = _scrape_traits_for_character(character)
-    if not (img_tag := character.find("img")):
-        raise ValueError("Character has no <img> tag")
-
-    img_tag = cast(Tag, img_tag)
+    img_tag = require_tag(character, "img")
     name = str(img_tag["alt"])
     icon = str(img_tag["src"])
     cost = _price_from_character_class(" ".join(character["class"]))
@@ -47,11 +44,11 @@ def _extract_traits_from_character_html(html: str) -> list[str]:
     selector = ".ability-description-name"
     ability_tags = BeautifulSoup(html, "html.parser").select(selector)
 
-    # TODO: Better handling for ability tags when elements are missing in html
     return [
-        tag.find("h2").get_text()  # type: ignore
+        require_tag(tag, "h2").get_text(strip=True)
         for tag in ability_tags
-        if tag.find("h4").get_text().lower() not in ["active", "passive"]  # type: ignore
+        if require_tag(tag, "h4").get_text(strip=True).lower()
+        not in ["active", "passive"]
     ]
 
 
@@ -59,6 +56,20 @@ def _price_from_character_class(classes: str) -> int:
     pattern = re.compile(r"\bc(\d+)\b")
     matches = pattern.findall(classes)
     return int(matches[0]) if matches else 0
+
+
+def require_tag(tag: Tag, tag_name: str) -> Tag:
+    """Find the first child tag with the given name. Raises ValueError if not found."""
+    if not (found := tag.find(tag_name)):
+        raise ValueError(f"Tag '{tag_name}' not found")
+    return cast(Tag, found)
+
+
+def require_tag_by_class(tag: Tag, class_name: str) -> Tag:
+    """Find the first child tag with the given class name. Raises ValueError if not found."""
+    if not (found := tag.find(class_=class_name)):
+        raise ValueError(f"Tag with class '{class_name}' not found")
+    return cast(Tag, found)
 
 
 def trigger_webhook_if_set():

@@ -7,6 +7,7 @@ from pymongo.collection import Collection
 
 from common.models import CompositeItem, Item
 from common.db import DB
+from scraper.helpers import require_tag_by_class
 
 ScrapeURL = r"https://www.mobafire.com/teamfight-tactics/items-cheatsheet"
 Selector = ".mobile-items .item"
@@ -47,7 +48,7 @@ def scrape_items() -> List[CompositeItem]:
 
 
 def _build_composite_item(div: Tag) -> CompositeItem:
-    image = div.find(class_="final")["src"]
+    image = str(require_tag_by_class(div, "final")["src"])
 
     return CompositeItem(
         name=_name_from_image_url(image),
@@ -59,7 +60,7 @@ def _build_composite_item(div: Tag) -> CompositeItem:
 
 
 def _build_item_from_component(img: Tag) -> Item:
-    url = img["src"]
+    url = str(img["src"])
     return Item(name=_name_from_image_url(url), image=url)
 
 

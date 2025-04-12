@@ -1,6 +1,6 @@
 import requests
 
-from typing import List, Optional
+from typing import List
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -8,7 +8,7 @@ from pymongo.collection import Collection
 
 from common.models import Champion, Comp, Item, ItemRecommendation
 from common.db import DB
-from .helpers import build_champion_from_character
+from .helpers import build_champion_from_character, require_tag, require_tag_by_class
 
 TFTCompsURL = r"https://tftactics.gg/tierlist/team-comps"
 
@@ -25,10 +25,14 @@ def scrape_comps() -> List[Comp]:
 
 
 def _build_comp_from_team(team: Tag) -> Comp:
-    playstyle = team.find_next(class_="team-playstyle").get_text()
-    name = team.find_next(class_="team-name-elipsis").get_text().replace(playstyle, "")
+    playstyle = require_tag_by_class(team, "team-playstyle").get_text(strip=True)
+    tier = require_tag_by_class(team, "team-rank").get_text(strip=True)
+    name = (
+        require_tag_by_class(team, "team-name-elipsis")
+        .get_text(strip=True)
+        .replace(playstyle, "")
+    )
 
-    tier = team.find_next(class_="team-rank").get_text()
     characters = team.select(".team-characters > .characters-item")
     champions = [build_champion_from_character(c) for c in characters]
     items = list(map(_build_item_recommendation, characters, champions))
@@ -51,9 +55,10 @@ def _build_item_recommendation(
 
 
 def _build_item(tag: Tag) -> Item:
-    img_tag = tag.find("img")
-    name = img_tag["alt"]
-    icon = img_tag["src"]
+    img_tag = require_tag(tag, "img")
+    name = str(img_tag["alt"])
+    icon = str(img_tag["src"])
+
     return Item(name=name, image=icon)
 
 
