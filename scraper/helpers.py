@@ -11,7 +11,7 @@ from common.models import Champion
 traits_cache = {}
 
 
-def _build_champion_from_character(character: Tag) -> Champion:
+def build_champion_from_character(character: Tag) -> Champion:
     traits = _scrape_traits_for_character(character)
     if not (img_tag := character.find("img")):
         raise ValueError("Character has no <img> tag")
@@ -61,7 +61,7 @@ def _price_from_character_class(classes: str) -> int:
     return int(matches[0]) if matches else 0
 
 
-def _trigger_webhook_if_set():
+def trigger_webhook_if_set():
     data_fetched_webhook = os.getenv("DATA_FETCHED_WEBHOOK")
     if not data_fetched_webhook:
         return

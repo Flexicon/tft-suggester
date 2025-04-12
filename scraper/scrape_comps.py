@@ -8,7 +8,7 @@ from pymongo.collection import Collection
 
 from common.models import Champion, Comp, Item, ItemRecommendation
 from common.db import DB
-from .helpers import _build_champion_from_character
+from .helpers import build_champion_from_character
 
 TFTCompsURL = r"https://tftactics.gg/tierlist/team-comps"
 
@@ -30,7 +30,7 @@ def _build_comp_from_team(team: Tag) -> Comp:
 
     tier = team.find_next(class_="team-rank").get_text()
     characters = team.select(".team-characters > .characters-item")
-    champions = [_build_champion_from_character(c) for c in characters]
+    champions = [build_champion_from_character(c) for c in characters]
     items = list(map(_build_item_recommendation, characters, champions))
 
     return Comp(

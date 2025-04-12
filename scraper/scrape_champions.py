@@ -7,7 +7,7 @@ from pymongo.collection import Collection
 
 from common.models import Champion
 from common.db import DB
-from .helpers import _build_champion_from_character
+from .helpers import build_champion_from_character
 
 TFTChampionsURL = r"https://tftactics.gg/champions/"
 ChampionsSelector = ".characters-list > .characters-item"
@@ -19,7 +19,7 @@ def scrape_champions() -> List[Champion]:
     res.raise_for_status()
 
     characters = BeautifulSoup(res.text, "html.parser").select(ChampionsSelector)
-    champions = [_build_champion_from_character(c) for c in characters]
+    champions = [build_champion_from_character(c) for c in characters]
     return champions
 
 
