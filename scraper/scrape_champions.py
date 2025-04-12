@@ -9,7 +9,7 @@ from common.models import Champion
 from common.db import DB
 from .helpers import _build_champion_from_character
 
-TFTChampionsURL = r"https://tftactics.gg/tierlist/champions"
+TFTChampionsURL = r"https://tftactics.gg/champions/"
 ChampionsSelector = ".characters-list > .characters-item"
 
 
