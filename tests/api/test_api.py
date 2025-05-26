@@ -29,6 +29,7 @@ class ApiTest(unittest.TestCase):
                         "name": "Varus",
                         "image": "varus.png",
                         "cost": 1,
+                        "traits": ["Exotech", "Executioner"],
                     },
                     {
                         "_id": "champ-id-2",
@@ -52,8 +53,18 @@ class ApiTest(unittest.TestCase):
                     "name": "Inferno",
                     "tier": "S",
                     "champions": [
-                        {"name": "Varus", "image": "varus.png", "cost": 1},
-                        {"name": "Zyra", "image": "zyra.png", "cost": 3},
+                        {
+                            "name": "Varus",
+                            "image": "varus.png",
+                            "cost": 1,
+                            "traits": ["Exotech", "Executioner"],
+                        },
+                        {
+                            "name": "Zyra",
+                            "image": "zyra.png",
+                            "cost": 3,
+                            "traits": [],
+                        },
                     ],
                     "playstyle": "Slow Roll",
                     "item_recommendations": [],
@@ -65,8 +76,20 @@ class ApiTest(unittest.TestCase):
     def test_get_champions(self, db_mock):
         collection_mock = Mock()
         collection_mock.find.return_value = [
-            {"_id": "champ-id-1", "name": "Varus", "image": "varus.png", "cost": 1},
-            {"_id": "champ-id-2", "name": "Zyra", "image": "zyra.png", "cost": 3},
+            {
+                "_id": "champ-id-1",
+                "name": "Varus",
+                "image": "varus.png",
+                "cost": 1,
+                "traits": ["Exotech", "Executioner"],
+            },
+            {
+                "_id": "champ-id-2",
+                "name": "Zyra",
+                "image": "zyra.png",
+                "cost": 3,
+                "traits": ["Street Demon", "Techie"],
+            },
         ]
         db_mock.get_champions_collection.return_value = collection_mock
 
@@ -75,7 +98,17 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(
             response.json(),
             [
-                {"name": "Varus", "image": "varus.png", "cost": 1},
-                {"name": "Zyra", "image": "zyra.png", "cost": 3},
+                {
+                    "name": "Varus",
+                    "image": "varus.png",
+                    "cost": 1,
+                    "traits": ["Exotech", "Executioner"],
+                },
+                {
+                    "name": "Zyra",
+                    "image": "zyra.png",
+                    "cost": 3,
+                    "traits": ["Street Demon", "Techie"],
+                },
             ],
         )
