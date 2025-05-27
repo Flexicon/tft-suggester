@@ -19,7 +19,7 @@ jobs:
           cache: 'pip'
       - run: pip install -r requirements.txt
       - name: Run worker
-        uses: nick-fields/retry@3f757583fb1b1f940bc8ef4bf4734c8dc02a5847
+        uses: nick-fields/retry@9417ab499314dfe692edb043ded2ff9b3f5f0a68
         env:
           DB_NAME: ${{ secrets.DB_NAME }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
