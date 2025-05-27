@@ -36,8 +36,8 @@ def get_items() -> List[Item]:
 def _map_item_dict(item) -> dict:
     return {
         **item,
-        'name': _parse_item_name(item['name']),
-        'loadoutsIcon': asset_url(item['loadoutsIcon'])
+        "name": _parse_item_name(item["name"]),
+        "loadoutsIcon": asset_url(item["loadoutsIcon"]),
     }
 
 
@@ -47,9 +47,9 @@ def _parse_item_name(name: str) -> str:
 
     if prefix_index == -1:
         return name
-    
-    name_without_prefix = name[prefix_index+len(prefix):]
-    words = re.split('([A-Z][a-z]+)', name_without_prefix)
-    words = [word for word in words if word and word not in ['_', '-']]
 
-    return ' '.join(words)
+    name_without_prefix = name[prefix_index + len(prefix) :]
+    words = re.split("([A-Z][a-z]+)", name_without_prefix)
+    words = [word for word in words if word and word not in ["_", "-"]]
+
+    return " ".join(words)

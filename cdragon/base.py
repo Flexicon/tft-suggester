@@ -1,11 +1,13 @@
 import requests_cache
 
 
-BASE_URL = "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default"
+BASE_URL = (
+    "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default"
+)
 
 
 def cached_session():
-    return requests_cache.CachedSession('cdragon_cache', expire_after=3600)
+    return requests_cache.CachedSession("cdragon_cache", expire_after=3600)
 
 
 def asset_url(path: str) -> str:
