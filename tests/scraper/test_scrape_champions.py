@@ -4,6 +4,8 @@ from common.models.champion import Champion
 from scraper.constants import TFTBaseURL
 from scraper.scrape_champions import TFTChampionsURL, scrape_champions
 
+from tests.scraper.test_helpers import load_mock_file
+
 
 @responses.activate
 def test_scrape_champions_no_content():
@@ -18,19 +20,19 @@ def test_scrape_champions(request):
     responses.add(
         responses.GET,
         TFTChampionsURL,
-        body=_load_mock_file(request, "mock_champions.html"),
+        body=load_mock_file(request, "mock_champions.html"),
         status=200,
     )
     responses.add(
         responses.GET,
         f"{TFTBaseURL}/champions/alistar/",
-        body=_load_mock_file(request, "mock_alistar.html"),
+        body=load_mock_file(request, "mock_alistar.html"),
         status=200,
     )
     responses.add(
         responses.GET,
         f"{TFTBaseURL}/champions/annie/",
-        body=_load_mock_file(request, "mock_annie.html"),
+        body=load_mock_file(request, "mock_annie.html"),
         status=200,
     )
     expected_champions = [
@@ -50,8 +52,3 @@ def test_scrape_champions(request):
 
     champions = scrape_champions()
     assert champions == expected_champions, "Champions do not match expected values"
-
-
-def _load_mock_file(request, filename):
-    with open(f"{request.fspath.dirname}/mocks/{filename}", encoding="utf-8") as f:
-        return f.read()

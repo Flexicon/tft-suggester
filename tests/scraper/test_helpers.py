@@ -19,3 +19,8 @@ from scraper.helpers import _price_from_character_class
 def test_price_from_character_class(classes, expected):
     result = _price_from_character_class(classes)
     assert result == expected, "result did not match expected value"
+
+
+def load_mock_file(request, filename):
+    with open(f"{request.fspath.dirname}/mocks/{filename}", encoding="utf-8") as f:
+        return f.read()
