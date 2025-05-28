@@ -24,4 +24,4 @@ scrape_items:
 	uv run python -m scraper.scrape_items
 
 test:
-	uv run python -m pytest
+	uv run python -m pytest -v

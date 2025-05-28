@@ -8,9 +8,14 @@ from pymongo.collection import Collection
 
 from common.models import Champion, Comp, Item, ItemRecommendation
 from common.db import DB
-from .helpers import build_champion_from_character, require_tag, require_tag_by_class
+from scraper.constants import TFTBaseURL
+from scraper.helpers import (
+    build_champion_from_character,
+    require_tag,
+    require_tag_by_class,
+)
 
-TFTCompsURL = r"https://tftactics.gg/tierlist/team-comps"
+TFTCompsURL = f"{TFTBaseURL}/tierlist/team-comps"
 
 
 def scrape_comps() -> List[Comp]:

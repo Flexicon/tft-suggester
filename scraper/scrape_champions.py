@@ -7,9 +7,10 @@ from pymongo.collection import Collection
 
 from common.models import Champion
 from common.db import DB
-from .helpers import build_champion_from_character
+from scraper.constants import TFTBaseURL
+from scraper.helpers import build_champion_from_character
 
-TFTChampionsURL = r"https://tftactics.gg/champions/"
+TFTChampionsURL = f"{TFTBaseURL}/champions/"
 ChampionsSelector = ".characters-list > .characters-item"
 
 

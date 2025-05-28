@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from common.models import Champion
+from scraper.constants import TFTBaseURL
 
 traits_cache = {}
 
@@ -23,7 +24,7 @@ def build_champion_from_character(character: Tag) -> Champion:
 
 def _scrape_traits_for_character(character: Tag) -> list[str]:
     href = str(character["href"])
-    url = f"https://tftactics.gg{href}" if href.startswith("/") else href
+    url = f"{TFTBaseURL}{href}" if href.startswith("/") else href
 
     if url in traits_cache:
         print(f"Using cached traits for: {url}")
