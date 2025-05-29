@@ -25,3 +25,6 @@ scrape_items:
 
 test:
 	uv run python -m pytest -v
+
+test_integration:
+	uv run python -m pytest -v -m integration
