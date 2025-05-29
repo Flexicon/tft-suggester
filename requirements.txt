@@ -12,7 +12,7 @@ exceptiongroup==1.2.2
 fastapi==0.65.2
 gunicorn==20.0.4
 h11==0.14.0
-idna==2.8
+idna==3.10
 more-itertools==10.6.0
 packaging==24.2
 pluggy==0.13.1
