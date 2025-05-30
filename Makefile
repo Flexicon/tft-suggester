@@ -24,4 +24,7 @@ scrape_items:
 	uv run python -m scraper.scrape_items
 
 test:
-	uv run python -m pytest -v
+	uv run python -m pytest -v -m "not integration"
+
+test_integration:
+	uv run python -m pytest -v -m integration
