@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -8,7 +9,7 @@ class DB:
     _connection = None
     _database = None
 
-    def connect(self, connection_url: str = None) -> "DB":
+    def connect(self, connection_url: Union[str, None] = None) -> "DB":
         if connection_url is None:
             connection_url = os.getenv("MONGODB_URI")
 
@@ -17,13 +18,13 @@ class DB:
             connectTimeoutMS=5000,
             socketTimeoutMS=5000,
             serverSelectionTimeoutMS=5000,
-            socketKeepAlive=True,
         )
         self._database = self._connection.get_database()
         return self
 
     def disconnect(self):
-        self._connection.close()
+        if self._connection:
+            self._connection.close()
 
     def _get_collection(self, name: str):
         if self._database is None:
