@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from typing import List
 
 from dotenv import load_dotenv
@@ -10,15 +11,15 @@ from common.db import DB
 from common.models import Champion, Comp, CompositeItem
 
 load_dotenv()
-app = FastAPI()
-db = DB()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[os.getenv("CORS_SPA_ORIGIN", "http://localhost:8080")],
-    allow_methods=["GET"],
-    allow_headers=["*"],
-)
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    # This function is called when the app starts up
+    db.connect()
+    yield
+    # And yields after the app begins shutting down
+    db.disconnect()
 
 
 class ChampionResponse(Champion):
@@ -33,14 +34,15 @@ class ItemResponse(CompositeItem):
     pass
 
 
-@app.on_event("startup")
-async def startup():
-    db.connect()
+db = DB()
+app = FastAPI(lifespan=lifespan)
 
-
-@app.on_event("shutdown")
-async def shutdown():
-    db.disconnect()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[os.getenv("CORS_SPA_ORIGIN", "http://localhost:8080")],
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
