@@ -8,11 +8,11 @@ from starlette.testclient import TestClient
 from api import app, db
 
 client = TestClient(app)
-mongodb = MongoDbContainer()
 
 
 @pytest.fixture(scope="module", autouse=True)
 def setup(request):
+    mongodb = MongoDbContainer()
     mongodb.start()
 
     def remove_container():
