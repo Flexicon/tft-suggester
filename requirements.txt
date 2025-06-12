@@ -5,7 +5,7 @@ pydantic==2.11.5
 pymongo==4.13.1
 pytest==8.3.5
 python-dotenv==1.1.0
-requests==2.32.3
+requests==2.32.4
 requests-cache==1.2.1
 responses==0.25.7
 testcontainers==4.10.0
