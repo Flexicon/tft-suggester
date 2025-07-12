@@ -1,7 +1,7 @@
 beautifulsoup4==4.13.4
 fastapi==0.116.0
 httpx==0.28.1
-pydantic==2.11.5
+pydantic==2.11.7
 pymongo==4.13.1
 pytest==8.4.1
 python-dotenv==1.1.0
