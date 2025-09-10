@@ -8,5 +8,5 @@ python-dotenv==1.1.1
 requests==2.32.4
 requests-cache==1.2.1
 responses==0.25.7
-testcontainers==4.10.0
+testcontainers==4.13.0
 uvicorn==0.35.0
