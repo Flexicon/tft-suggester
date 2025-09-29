@@ -1,4 +1,4 @@
-beautifulsoup4==4.13.4
+beautifulsoup4==4.14.0
 fastapi==0.116.0
 httpx==0.28.1
 pydantic==2.11.7
