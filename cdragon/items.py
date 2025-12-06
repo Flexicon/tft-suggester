@@ -72,19 +72,19 @@ def get_composite_items() -> List[CompositeItem]:
 
     # Filter for actual TFT items (not augments or special items)
     tft_items = [
-        item for item in all_items
+        item
+        for item in all_items
         if item.get("apiName", "").startswith("TFT_Item_")
         and "Augment" not in item.get("apiName", "")
     ]
 
     # Create a mapping of apiName to item data for looking up components
-    items_by_api_name: Dict[str, dict] = {
-        item["apiName"]: item for item in tft_items
-    }
+    items_by_api_name: Dict[str, dict] = {item["apiName"]: item for item in tft_items}
 
     # Filter for composite items (items with components)
     composite_items_data = [
-        item for item in tft_items
+        item
+        for item in tft_items
         if item.get("composition") and len(item.get("composition", [])) > 0
     ]
 
@@ -96,13 +96,17 @@ def get_composite_items() -> List[CompositeItem]:
             composite_items.append(composite_item)
         except Exception as e:
             # Log but continue if we can't parse a specific item
-            print(f"Warning: Could not parse item {item_data.get('name', 'unknown')}: {e}")
+            print(
+                f"Warning: Could not parse item {item_data.get('name', 'unknown')}: {e}"
+            )
             continue
 
     return composite_items
 
 
-def _build_composite_item(item_data: dict, items_lookup: Dict[str, dict]) -> CompositeItem:
+def _build_composite_item(
+    item_data: dict, items_lookup: Dict[str, dict]
+) -> CompositeItem:
     """Build a CompositeItem from raw item data and a lookup dict for components."""
     name = item_data["name"]
     # Parse name if it's in raw format (e.g., "tft_item_name_CursedBlade")
@@ -123,13 +127,8 @@ def _build_composite_item(item_data: dict, items_lookup: Dict[str, dict]) -> Com
                 component_name = _parse_item_name(component_name)
 
             component_item = SimpleItem(
-                name=component_name,
-                image=asset_url(component_data["icon"])
+                name=component_name, image=asset_url(component_data["icon"])
             )
             components.append(component_item)
 
-    return CompositeItem(
-        name=name,
-        image=image_url,
-        components=components
-    )
+    return CompositeItem(name=name, image=image_url, components=components)

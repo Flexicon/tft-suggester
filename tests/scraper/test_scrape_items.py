@@ -169,4 +169,6 @@ def test_scrape_items_with_raw_item_names():
 
     assert len(items) == 1, "Expected 1 composite item"
     assert items[0].name == "Cursed Blade", "Raw item name should be parsed"
-    assert items[0].components[0].name == "Test Component", "Raw component name should be parsed"
+    assert (
+        items[0].components[0].name == "Test Component"
+    ), "Raw component name should be parsed"

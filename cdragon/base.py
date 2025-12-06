@@ -14,8 +14,8 @@ def asset_url(path: str) -> str:
 
     Automatically converts .tex texture file links to .png for web compatibility.
     """
-    cleaned_path = path.lower().removeprefix('/lol-game-data/assets/').removeprefix('/')
+    cleaned_path = path.lower().removeprefix("/lol-game-data/assets/").removeprefix("/")
     # Convert texture file links to PNG
-    if cleaned_path.endswith('.tex'):
-        cleaned_path = cleaned_path[:-4] + '.png'
+    if cleaned_path.endswith(".tex"):
+        cleaned_path = cleaned_path[:-4] + ".png"
     return f"{BASE_URL}/{cleaned_path}"
