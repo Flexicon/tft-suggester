@@ -17,6 +17,15 @@ from cdragon.base import asset_url, BASE_URL
             "/lol-game-data/assets/ASSETS/Maps/Particles/TFT/TFT_Item_BladeOfTheRuinedKing.png",
             f"{BASE_URL}/assets/maps/particles/tft/tft_item_bladeoftheruinedking.png",
         ),
+        # .tex to .png conversion
+        (
+            "ASSETS/Maps/TFT/Icons/Items/Hexcore/TFT_Item_Deathblade.TFT_Set13.tex",
+            f"{BASE_URL}/assets/maps/tft/icons/items/hexcore/tft_item_deathblade.tft_set13.png",
+        ),
+        (
+            "/lol-game-data/assets/ASSETS/Maps/Particles/TFT/tft_item_cursedblade.tex",
+            f"{BASE_URL}/assets/maps/particles/tft/tft_item_cursedblade.png",
+        ),
     ],
 )
 def test_asset_url(path, expected):

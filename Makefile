@@ -1,4 +1,4 @@
-.PHONY: dev api test
+.PHONY: dev api test format
 
 dev:
 	docker compose up -d mongo
@@ -28,3 +28,6 @@ test:
 
 test_integration:
 	uv run python -m pytest -v -m integration
+
+format:
+	uv run black .
