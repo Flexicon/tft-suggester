@@ -24,18 +24,25 @@ def scrape_champions() -> List[Champion]:
     return champions
 
 
-def scrape_and_persist(collection: Collection):
-    result = scrape_champions()
-    print(f'Found {len(result)} champions\n{"-" * 15}\n')
+def persist(collection: Collection, champions: List[Champion]) -> None:
+    if not champions:
+        print("Found 0 champions, leaving the existing collection untouched.")
+        return
 
-    for champion in result:
+    print(f'Found {len(champions)} champions\n{"-" * 15}\n')
+
+    for champion in champions:
         print(
             f"Name: {champion.name}\nImage: {champion.image}\nCost: {champion.cost}\nTraits: {champion.traits}\n"
         )
 
     collection.drop()
-    collection.insert_many([comp.dict() for comp in result])
+    collection.insert_many([champion.model_dump() for champion in champions])
     print("Saved latest champions to db successfully!")
+
+
+def scrape_and_persist(collection: Collection):
+    persist(collection, scrape_champions())
 
 
 if __name__ == "__main__":

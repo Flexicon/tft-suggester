@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from pymongo.collection import Collection
 
-from common.models import Champion, Comp, Item, ItemRecommendation
+from common.models import Comp, Item, ItemRecommendation
 from common.db import DB
 from scraper.constants import TFTBaseURL
 from scraper.helpers import (
@@ -16,6 +16,8 @@ from scraper.helpers import (
 )
 
 TFTCompsURL = f"{TFTBaseURL}/tierlist/team-comps"
+TEAM_NAME_CLASS = "team-name-elipsis"
+TEAM_PLAYSTYLE_CLASS = "team-playstyle"
 
 
 def scrape_comps() -> List[Comp]:
@@ -30,17 +32,16 @@ def scrape_comps() -> List[Comp]:
 
 
 def _build_comp_from_team(team: Tag) -> Comp:
-    playstyle = require_tag_by_class(team, "team-playstyle").get_text(strip=True)
+    playstyle = require_tag_by_class(team, TEAM_PLAYSTYLE_CLASS).get_text(strip=True)
     tier = require_tag_by_class(team, "team-rank").get_text(strip=True)
-    name = (
-        require_tag_by_class(team, "team-name-elipsis")
-        .get_text(strip=True)
-        .replace(playstyle, "")
-    )
+    name = _comp_name(team, playstyle)
 
     characters = team.select(".team-characters > .characters-item")
     champions = [build_champion_from_character(c) for c in characters]
-    items = list(map(_build_item_recommendation, characters, champions))
+    items = [
+        _build_item_recommendation(character, champion.name)
+        for character, champion in zip(characters, champions)
+    ]
 
     return Comp(
         name=name,
@@ -51,12 +52,26 @@ def _build_comp_from_team(team: Tag) -> Comp:
     )
 
 
+def _comp_name(team: Tag, playstyle: str) -> str:
+    """Read the comp name without the playstyle text nested inside the same tag."""
+    name_tag = require_tag_by_class(team, TEAM_NAME_CLASS)
+    name = " ".join(
+        text.strip() for text in name_tag.find_all(string=True, recursive=False)
+    ).strip()
+
+    if name:
+        return name
+
+    # Fallback for markup changes: the playstyle is nested inside the name tag.
+    return name_tag.get_text(strip=True).replace(playstyle, "").strip()
+
+
 def _build_item_recommendation(
-    character: Tag, champion: Champion
+    character: Tag, champion_name: str
 ) -> ItemRecommendation:
-    item_tags = character.find_all(class_="characters-item")
+    item_tags = character.select(".character-items > .characters-item")
     items = [_build_item(t) for t in item_tags]
-    return ItemRecommendation(champion=champion.name, items=items)
+    return ItemRecommendation(champion=champion_name, items=items)
 
 
 def _build_item(tag: Tag) -> Item:
@@ -67,11 +82,14 @@ def _build_item(tag: Tag) -> Item:
     return Item(name=name, image=icon)
 
 
-def scrape_and_persist(collection: Collection):
-    result = scrape_comps()
-    print(f"Found {len(result)} comps\n{'-' * 15}\n")
+def persist(collection: Collection, comps: List[Comp]) -> None:
+    if not comps:
+        print("Found 0 comps, leaving the existing collection untouched.")
+        return
 
-    for comp in result:
+    print(f"Found {len(comps)} comps\n{'-' * 15}\n")
+
+    for comp in comps:
         champions_line = ", ".join([c.name for c in comp.champions])
         print(f"Tier: {comp.tier}\nName: {comp.name}\nChampions: {champions_line}")
         print("Recommendations:")
@@ -85,8 +103,12 @@ def scrape_and_persist(collection: Collection):
         print("\n")
 
     collection.drop()
-    collection.insert_many([comp.dict() for comp in result])
+    collection.insert_many([comp.model_dump() for comp in comps])
     print("Saved latest ranking to db successfully!")
+
+
+def scrape_and_persist(collection: Collection):
+    persist(collection, scrape_comps())
 
 
 if __name__ == "__main__":

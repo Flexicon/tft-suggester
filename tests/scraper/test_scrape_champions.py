@@ -1,8 +1,14 @@
+from unittest.mock import Mock, patch
+
 import responses
 
 from common.models.champion import Champion
 from scraper.constants import TFTBaseURL
-from scraper.scrape_champions import TFTChampionsURL, scrape_champions
+from scraper.scrape_champions import (
+    TFTChampionsURL,
+    scrape_and_persist,
+    scrape_champions,
+)
 
 from tests.scraper.test_helpers import load_mock_file
 
@@ -52,3 +58,13 @@ def test_scrape_champions(request):
 
     champions = scrape_champions()
     assert champions == expected_champions, "Champions do not match expected values"
+
+
+def test_scrape_and_persist_leaves_collection_untouched_when_empty():
+    collection = Mock()
+
+    with patch("scraper.scrape_champions.scrape_champions", return_value=[]):
+        scrape_and_persist(collection)
+
+    collection.drop.assert_not_called()
+    collection.insert_many.assert_not_called()

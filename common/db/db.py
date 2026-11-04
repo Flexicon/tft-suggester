@@ -1,15 +1,20 @@
 import os
-from typing import Union
+from typing import Optional, Union
 
 from pymongo import MongoClient
 from pymongo.collection import Collection
+from pymongo.database import Database
 
 
 class DB:
-    _connection = None
-    _database = None
+    def __init__(self) -> None:
+        self._connection: Optional[MongoClient] = None
+        self._database: Optional[Database] = None
 
     def connect(self, connection_url: Union[str, None] = None) -> "DB":
+        if self._connection is not None:
+            self._connection.close()
+
         if connection_url is None:
             connection_url = os.getenv("MONGODB_URI")
 
@@ -25,6 +30,8 @@ class DB:
     def disconnect(self):
         if self._connection:
             self._connection.close()
+            self._connection = None
+        self._database = None
 
     def _get_collection(self, name: str):
         if self._database is None:
