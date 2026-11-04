@@ -3,7 +3,7 @@ from typing import List
 from pymongo.collection import Collection
 
 from common.models import CompositeItem
-from common.db import DB
+from common.db import DB, replace_collection
 from cdragon.items import get_composite_items
 
 
@@ -37,8 +37,7 @@ def persist(collection: Collection, items: List[CompositeItem]) -> None:
         )
         print("\n")
 
-    collection.drop()
-    collection.insert_many([item.model_dump() for item in items])
+    replace_collection(collection, [item.model_dump() for item in items])
     print("Saved latest items to db successfully!")
 
 

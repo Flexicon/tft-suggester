@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from pymongo.collection import Collection
 
 from common.models import Champion
-from common.db import DB
+from common.db import DB, replace_collection
 from scraper.constants import TFTBaseURL
 from scraper.helpers import build_champion_from_character
 from scraper.http_client import get
@@ -35,8 +35,7 @@ def persist(collection: Collection, champions: List[Champion]) -> None:
             f"Name: {champion.name}\nImage: {champion.image}\nCost: {champion.cost}\nTraits: {champion.traits}\n"
         )
 
-    collection.drop()
-    collection.insert_many([champion.model_dump() for champion in champions])
+    replace_collection(collection, [champion.model_dump() for champion in champions])
     print("Saved latest champions to db successfully!")
 
 

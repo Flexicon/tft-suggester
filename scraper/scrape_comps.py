@@ -5,7 +5,7 @@ from bs4.element import Tag
 from pymongo.collection import Collection
 
 from common.models import Comp, Item, ItemRecommendation
-from common.db import DB
+from common.db import DB, replace_collection
 from scraper.constants import TFTBaseURL
 from scraper.helpers import (
     build_champion_from_character,
@@ -117,8 +117,7 @@ def persist(collection: Collection, comps: List[Comp]) -> None:
 
         print("\n")
 
-    collection.drop()
-    collection.insert_many([comp.model_dump() for comp in comps])
+    replace_collection(collection, [comp.model_dump() for comp in comps])
     print("Saved latest ranking to db successfully!")
 
 
