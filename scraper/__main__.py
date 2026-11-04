@@ -1,11 +1,17 @@
+import logging
+
 from common.db import DB
 from scraper.helpers import trigger_webhook_if_set
+from scraper.logging_utils import configure_logging
 from scraper.scrape_champions import scrape_and_persist as scrape_champions
 from scraper.scrape_comps import scrape_and_persist as scrape_comps
 from scraper.scrape_items import scrape_and_persist as scrape_items
 
+logger = logging.getLogger(__name__)
+
 if __name__ == "__main__":
-    print("Running scraper 🕷️")
+    configure_logging()
+    logger.info("Running scraper 🕷️")
     db = DB().connect()
     try:
         scrape_champions(db.get_champions_collection())

@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Optional, Union
 
@@ -5,6 +6,8 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.errors import OperationFailure
+
+logger = logging.getLogger(__name__)
 
 STAGING_SUFFIX = "__staging"
 
@@ -28,9 +31,10 @@ def replace_collection(collection: Collection, documents: list[dict]) -> None:
     try:
         staging.rename(name, dropTarget=True)
     except OperationFailure as exc:
-        print(
-            f"Could not atomically swap '{name}' ({exc}); "
-            "falling back to drop + insert."
+        logger.warning(
+            "Could not atomically swap '%s' (%s); falling back to drop + insert.",
+            name,
+            exc,
         )
         target = database.get_collection(name)
         target.drop()

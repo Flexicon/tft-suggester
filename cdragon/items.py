@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 from typing import List, Dict
 import re
 
@@ -12,6 +13,8 @@ from cdragon.base import (
     cached_session,
 )
 from common.models import CompositeItem, Item as SimpleItem
+
+logger = logging.getLogger(__name__)
 
 ITEMS_URL = f"{BASE_URL}/v1/tftitems.json"
 TFT_DATA_URL = f"{CDRAGON_CDN}/cdragon/tft/en_us.json"
@@ -102,8 +105,10 @@ def get_composite_items() -> List[CompositeItem]:
             composite_items.append(composite_item)
         except Exception as e:
             # Log but continue if we can't parse a specific item
-            print(
-                f"Warning: Could not parse item {item_data.get('name', 'unknown')}: {e}"
+            logger.warning(
+                "Could not parse item %s: %s",
+                item_data.get("name", "unknown"),
+                e,
             )
             continue
 
