@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Mapping, Optional
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -19,7 +19,9 @@ TEAM_NAME_CLASS = "team-name-elipsis"
 TEAM_PLAYSTYLE_CLASS = "team-playstyle"
 
 
-def scrape_comps() -> List[Comp]:
+def scrape_comps(
+    traits_lookup: Optional[Mapping[str, list[str]]] = None,
+) -> List[Comp]:
     print(f"Fetching comps from: {TFTCompsURL}")
     res = get(TFTCompsURL)
     res.raise_for_status()
@@ -27,16 +29,21 @@ def scrape_comps() -> List[Comp]:
     teams = BeautifulSoup(res.text, "html.parser").find_all(
         "div", class_="team-portrait"
     )
-    return [_build_comp_from_team(t) for t in teams]
+    return [_build_comp_from_team(t, traits_lookup) for t in teams]
 
 
-def _build_comp_from_team(team: Tag) -> Comp:
+def _build_comp_from_team(
+    team: Tag, traits_lookup: Optional[Mapping[str, list[str]]] = None
+) -> Comp:
     playstyle = require_tag_by_class(team, TEAM_PLAYSTYLE_CLASS).get_text(strip=True)
     tier = require_tag_by_class(team, "team-rank").get_text(strip=True)
     name = _comp_name(team, playstyle)
 
     characters = team.select(".team-characters > .characters-item")
-    champions = [build_champion_from_character(c) for c in characters]
+    champions = [
+        build_champion_from_character(character, traits_lookup)
+        for character in characters
+    ]
     items = [
         _build_item_recommendation(character, champion.name)
         for character, champion in zip(characters, champions)
