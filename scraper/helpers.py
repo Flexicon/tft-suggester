@@ -2,12 +2,12 @@ import os
 import re
 from typing import cast
 
-import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 from common.models import Champion
 from scraper.constants import TFTBaseURL
+from scraper.http_client import get, post
 
 # Labels used by tftactics.gg for ability descriptions. Every other section on a
 # champion page (e.g. Origin, Class) describes a trait.
@@ -41,7 +41,7 @@ def _scrape_traits_for_character(character: Tag) -> list[str]:
         return traits_cache[url]
 
     print(f"Fetching champion traits from: {url}")
-    response = requests.get(url)
+    response = get(url)
     if response.status_code != 200:
         print(f"Failed to fetch champion traits from: {url}")
         return []
@@ -107,7 +107,7 @@ def trigger_webhook_if_set():
     if not data_fetched_webhook:
         return
 
-    response = requests.post(data_fetched_webhook)
+    response = post(data_fetched_webhook)
     response.raise_for_status()
 
     print("Webhook triggered")
