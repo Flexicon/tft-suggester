@@ -88,6 +88,15 @@ def _build_item(tag: Tag) -> Item:
     return Item(name=name, image=icon)
 
 
+def load_traits_lookup(champions_collection: Collection) -> dict[str, list[str]]:
+    """Reuse the traits persisted by the champions scraper."""
+    return {
+        document["name"]: document.get("traits", [])
+        for document in champions_collection.find({}, {"name": 1, "traits": 1})
+        if "name" in document
+    }
+
+
 def persist(collection: Collection, comps: List[Comp]) -> None:
     if not comps:
         print("Found 0 comps, leaving the existing collection untouched.")
@@ -113,12 +122,24 @@ def persist(collection: Collection, comps: List[Comp]) -> None:
     print("Saved latest ranking to db successfully!")
 
 
-def scrape_and_persist(collection: Collection):
-    persist(collection, scrape_comps())
+def scrape_and_persist(
+    collection: Collection, champions_collection: Optional[Collection] = None
+):
+    traits_lookup = (
+        load_traits_lookup(champions_collection)
+        if champions_collection is not None
+        else None
+    )
+    if traits_lookup is not None:
+        print(
+            f"Loaded traits for {len(traits_lookup)} champions "
+            "from the champions collection"
+        )
+    persist(collection, scrape_comps(traits_lookup=traits_lookup))
 
 
 if __name__ == "__main__":
     print("Scraping Comps 🕷️")
     db = DB().connect()
-    scrape_and_persist(db.get_comps_collection())
+    scrape_and_persist(db.get_comps_collection(), db.get_champions_collection())
     db.disconnect()

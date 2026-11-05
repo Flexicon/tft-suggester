@@ -17,6 +17,8 @@ jobs:
       scraper: scrape_champions
 
   scrape_comps:
+    # Comps reuse the champion traits persisted by the champions job.
+    needs: scrape_champions
     uses: ./.github/workflows/run_scraper.yml
     secrets: inherit
     with:
