@@ -17,19 +17,18 @@ def scrape_items() -> List[CompositeItem]:
     return get_composite_items()
 
 
-def scrape_and_persist(collection: Collection):
-    result = scrape_items()
-    if not result:
-        print("Found 0 items, exiting.")
+def persist(collection: Collection, items: List[CompositeItem]) -> None:
+    if not items:
+        print("Found 0 items, leaving the existing collection untouched.")
         return
 
     print(
         "Found {count} items\n{separator}\n".format(
-            count=len(result), separator="-" * 15
+            count=len(items), separator="-" * 15
         )
     )
 
-    for item in result:
+    for item in items:
         print(f"Name: {item.name}\nImage: {item.image}\nComponents:")
         print(
             "\n".join(
@@ -39,8 +38,12 @@ def scrape_and_persist(collection: Collection):
         print("\n")
 
     collection.drop()
-    collection.insert_many([item.dict() for item in result])
+    collection.insert_many([item.model_dump() for item in items])
     print("Saved latest items to db successfully!")
+
+
+def scrape_and_persist(collection: Collection):
+    persist(collection, scrape_items())
 
 
 if __name__ == "__main__":

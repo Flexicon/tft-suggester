@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from common.models import Item
 
@@ -7,4 +7,4 @@ from common.models import Item
 class CompositeItem(BaseModel):
     name: str
     image: str
-    components: List[Item] = []
+    components: List[Item] = Field(default_factory=list)

@@ -9,7 +9,17 @@ from bs4.element import Tag
 from common.models import Champion
 from scraper.constants import TFTBaseURL
 
+# Labels used by tftactics.gg for ability descriptions. Every other section on a
+# champion page (e.g. Origin, Class) describes a trait.
+NON_TRAIT_SECTION_LABELS = {"active", "passive"}
+TRAIT_ICON_CLASS = "misc-image"
+
 traits_cache = {}
+
+
+def clear_traits_cache() -> None:
+    """Clear the in-process traits cache. Intended for tests and long-lived processes."""
+    traits_cache.clear()
 
 
 def build_champion_from_character(character: Tag) -> Champion:
@@ -42,14 +52,33 @@ def _scrape_traits_for_character(character: Tag) -> list[str]:
 
 
 def _extract_traits_from_character_html(html: str) -> list[str]:
-    selector = ".ability-description-name"
-    ability_tags = BeautifulSoup(html, "html.parser").select(selector)
+    soup = BeautifulSoup(html, "html.parser")
 
+    # Trait sections carry an icon; ability descriptions carry no `misc-image`.
+    trait_blocks = [
+        block
+        for block in soup.select(".character-ability")
+        if block.find("img", class_=TRAIT_ICON_CLASS)
+        and _section_label(block) not in NON_TRAIT_SECTION_LABELS
+    ]
+    if trait_blocks:
+        return [require_tag(block, "h2").get_text(strip=True) for block in trait_blocks]
+
+    # Fallback for pages that do not render trait icons.
+    return _extract_traits_by_label(soup)
+
+
+def _section_label(block: Tag) -> str:
+    label_tag = block.select_one(".ability-description-name h4")
+    return label_tag.get_text(strip=True).lower() if label_tag else ""
+
+
+def _extract_traits_by_label(soup: BeautifulSoup) -> list[str]:
     return [
         require_tag(tag, "h2").get_text(strip=True)
-        for tag in ability_tags
+        for tag in soup.select(".ability-description-name")
         if require_tag(tag, "h4").get_text(strip=True).lower()
-        not in ["active", "passive"]
+        not in NON_TRAIT_SECTION_LABELS
     ]
 
 

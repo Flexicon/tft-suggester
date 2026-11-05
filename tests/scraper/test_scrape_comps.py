@@ -1,9 +1,11 @@
+from unittest.mock import Mock, patch
+
 import responses
 
 from common.models.champion import Champion
 from common.models.comp import Comp, Item, ItemRecommendation
 from scraper.constants import TFTBaseURL
-from scraper.scrape_comps import TFTCompsURL, scrape_comps
+from scraper.scrape_comps import TFTCompsURL, scrape_and_persist, scrape_comps
 
 from tests.scraper.test_helpers import load_mock_file
 
@@ -80,6 +82,10 @@ def test_scrape_comps(request):
 
     comps = scrape_comps()
 
+    assert len(comps) == len(
+        expected_comps
+    ), "Scraped comp count does not match expected values"
+
     for i, comp in enumerate(comps):
         expected_comp = expected_comps[i]
         assert comp.name == expected_comp.name, f"Comp name mismatch at index {i}"
@@ -94,7 +100,7 @@ def test_scrape_comps(request):
         for j, champion in enumerate(comp.champions):
             assert (
                 champion == expected_comp.champions[j]
-            ), "Champion mismatch at index {i}, champion {j}"
+            ), f"Champion mismatch at index {i}, champion {j}"
 
         assert len(comp.item_recommendations) == len(
             expected_comp.item_recommendations
@@ -113,3 +119,13 @@ def test_scrape_comps(request):
                 assert (
                     item == expected_rec.items[k]
                 ), f"Item mismatch at index {i}, recommendation {j}, item {k}"
+
+
+def test_scrape_and_persist_leaves_collection_untouched_when_empty():
+    collection = Mock()
+
+    with patch("scraper.scrape_comps.scrape_comps", return_value=[]):
+        scrape_and_persist(collection)
+
+    collection.drop.assert_not_called()
+    collection.insert_many.assert_not_called()
