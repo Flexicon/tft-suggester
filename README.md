@@ -77,9 +77,10 @@ in its own job, followed by the webhook.
   `tests/scraper/mocks/` capture the expected structure.
 - **Items** come from the Community Dragon TFT data feed, so they do not depend on
   tftactics markup.
-- A full `python -m scraper` run scrapes champions once and reuses their traits while
-  scraping comps, which avoids re-fetching every champion page. Running
-  `make scrape_comps` on its own falls back to fetching those pages directly.
+- The comps scraper reuses the champion traits persisted in the `champions`
+  collection, so it normally does not re-fetch champion pages. It falls back to
+  fetching a champion page when the collection is empty or a champion is missing.
+  In CI, the comps job waits for the champions job for this reason.
 - Persisting uses a staging collection plus `renameCollection` so readers see either
   the old or the new documents. Deployments that reject `renameCollection` fall back
   to drop-and-insert.
