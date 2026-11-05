@@ -1,6 +1,5 @@
 import requests_cache
 
-
 CDRAGON_CDN = "https://raw.communitydragon.org/latest"
 BASE_URL = f"{CDRAGON_CDN}/plugins/rcp-be-lol-game-data/global/default"
 
