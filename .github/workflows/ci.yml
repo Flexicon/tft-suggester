@@ -12,6 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - uses: psf/black@stable
+        with:
+          # Keep CI aligned with the version pinned in requirements.txt.
+          version: "25.11.0"
 
   test:
     runs-on: ubuntu-latest
@@ -27,5 +30,22 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run tests
-        run: python -m pytest
+      - name: Run unit tests
+        run: python -m pytest -v -m "not integration"
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run integration tests
+        run: python -m pytest -v -m integration

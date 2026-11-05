@@ -1,3 +1,4 @@
+import logging
 from typing import List, Mapping, Optional
 
 from bs4 import BeautifulSoup
@@ -13,6 +14,9 @@ from scraper.helpers import (
     require_tag_by_class,
 )
 from scraper.http_client import get
+from scraper.logging_utils import configure_logging
+
+logger = logging.getLogger(__name__)
 
 TFTCompsURL = f"{TFTBaseURL}/tierlist/team-comps"
 TEAM_NAME_CLASS = "team-name-elipsis"
@@ -22,7 +26,7 @@ TEAM_PLAYSTYLE_CLASS = "team-playstyle"
 def scrape_comps(
     traits_lookup: Optional[Mapping[str, list[str]]] = None,
 ) -> List[Comp]:
-    print(f"Fetching comps from: {TFTCompsURL}")
+    logger.info("Fetching comps from: %s", TFTCompsURL)
     res = get(TFTCompsURL)
     res.raise_for_status()
 
@@ -99,26 +103,28 @@ def load_traits_lookup(champions_collection: Collection) -> dict[str, list[str]]
 
 def persist(collection: Collection, comps: List[Comp]) -> None:
     if not comps:
-        print("Found 0 comps, leaving the existing collection untouched.")
+        logger.warning("Found 0 comps, leaving the existing collection untouched.")
         return
 
-    print(f"Found {len(comps)} comps\n{'-' * 15}\n")
+    logger.info("Found %s comps", len(comps))
 
     for comp in comps:
         champions_line = ", ".join([c.name for c in comp.champions])
-        print(f"Tier: {comp.tier}\nName: {comp.name}\nChampions: {champions_line}")
-        print("Recommendations:")
+        logger.info(
+            "Tier: %s | Name: %s | Champions: %s",
+            comp.tier,
+            comp.name,
+            champions_line,
+        )
 
         for recommendation in comp.item_recommendations:
             if not recommendation.items:
                 continue
-            print(f"\tFor {recommendation.champion}:")
-            print("\n".join([f"\t\t- {i.name}" for i in recommendation.items]))
-
-        print("\n")
+            item_names = ", ".join(item.name for item in recommendation.items)
+            logger.info("  %s: %s", recommendation.champion, item_names)
 
     replace_collection(collection, [comp.model_dump() for comp in comps])
-    print("Saved latest ranking to db successfully!")
+    logger.info("Saved latest ranking to db successfully!")
 
 
 def scrape_and_persist(
@@ -130,15 +136,18 @@ def scrape_and_persist(
         else None
     )
     if traits_lookup is not None:
-        print(
-            f"Loaded traits for {len(traits_lookup)} champions "
-            "from the champions collection"
+        logger.info(
+            "Loaded traits for %s champions from the champions collection",
+            len(traits_lookup),
         )
     persist(collection, scrape_comps(traits_lookup=traits_lookup))
 
 
 if __name__ == "__main__":
-    print("Scraping Comps 🕷️")
+    configure_logging()
+    logger.info("Scraping Comps 🕷️")
     db = DB().connect()
-    scrape_and_persist(db.get_comps_collection(), db.get_champions_collection())
-    db.disconnect()
+    try:
+        scrape_and_persist(db.get_comps_collection(), db.get_champions_collection())
+    finally:
+        db.disconnect()

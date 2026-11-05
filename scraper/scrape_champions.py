@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from bs4 import BeautifulSoup
@@ -8,13 +9,16 @@ from common.db import DB, replace_collection
 from scraper.constants import TFTBaseURL
 from scraper.helpers import build_champion_from_character
 from scraper.http_client import get
+from scraper.logging_utils import configure_logging
+
+logger = logging.getLogger(__name__)
 
 TFTChampionsURL = f"{TFTBaseURL}/champions/"
 ChampionsSelector = ".characters-list > .characters-item"
 
 
 def scrape_champions() -> List[Champion]:
-    print(f"Fetching champions from: {TFTChampionsURL}")
+    logger.info("Fetching champions from: %s", TFTChampionsURL)
     res = get(TFTChampionsURL)
     res.raise_for_status()
 
@@ -25,18 +29,22 @@ def scrape_champions() -> List[Champion]:
 
 def persist(collection: Collection, champions: List[Champion]) -> None:
     if not champions:
-        print("Found 0 champions, leaving the existing collection untouched.")
+        logger.warning("Found 0 champions, leaving the existing collection untouched.")
         return
 
-    print(f'Found {len(champions)} champions\n{"-" * 15}\n')
+    logger.info("Found %s champions", len(champions))
 
     for champion in champions:
-        print(
-            f"Name: {champion.name}\nImage: {champion.image}\nCost: {champion.cost}\nTraits: {champion.traits}\n"
+        logger.info(
+            "Name: %s | Image: %s | Cost: %s | Traits: %s",
+            champion.name,
+            champion.image,
+            champion.cost,
+            champion.traits,
         )
 
     replace_collection(collection, [champion.model_dump() for champion in champions])
-    print("Saved latest champions to db successfully!")
+    logger.info("Saved latest champions to db successfully!")
 
 
 def scrape_and_persist(collection: Collection):
@@ -44,7 +52,10 @@ def scrape_and_persist(collection: Collection):
 
 
 if __name__ == "__main__":
-    print("Scraping Champions 🕷️")
+    configure_logging()
+    logger.info("Scraping Champions 🕷️")
     db = DB().connect()
-    scrape_and_persist(db.get_champions_collection())
-    db.disconnect()
+    try:
+        scrape_and_persist(db.get_champions_collection())
+    finally:
+        db.disconnect()

@@ -2,5 +2,7 @@
 .github
 .pytest_cache
 venv/
+.venv/
 .env
 cdragon_cache.sqlite
+tests/

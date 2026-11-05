@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from pymongo.collection import Collection
@@ -5,6 +6,9 @@ from pymongo.collection import Collection
 from common.models import CompositeItem
 from common.db import DB, replace_collection
 from cdragon.items import get_composite_items
+from scraper.logging_utils import configure_logging
+
+logger = logging.getLogger(__name__)
 
 
 def scrape_items() -> List[CompositeItem]:
@@ -13,32 +17,28 @@ def scrape_items() -> List[CompositeItem]:
     Returns a list of CompositeItem objects with their components.
     Names are already properly formatted from the official data source.
     """
-    print("Fetching items from Community Dragon API...")
+    logger.info("Fetching items from Community Dragon API...")
     return get_composite_items()
 
 
 def persist(collection: Collection, items: List[CompositeItem]) -> None:
     if not items:
-        print("Found 0 items, leaving the existing collection untouched.")
+        logger.warning("Found 0 items, leaving the existing collection untouched.")
         return
 
-    print(
-        "Found {count} items\n{separator}\n".format(
-            count=len(items), separator="-" * 15
-        )
-    )
+    logger.info("Found %s items", len(items))
 
     for item in items:
-        print(f"Name: {item.name}\nImage: {item.image}\nComponents:")
-        print(
-            "\n".join(
-                [f"\t- Name: {c.name}\n\t  Image: {c.image}" for c in item.components]
-            )
+        components = ", ".join(component.name for component in item.components)
+        logger.info(
+            "Name: %s | Image: %s | Components: %s",
+            item.name,
+            item.image,
+            components,
         )
-        print("\n")
 
     replace_collection(collection, [item.model_dump() for item in items])
-    print("Saved latest items to db successfully!")
+    logger.info("Saved latest items to db successfully!")
 
 
 def scrape_and_persist(collection: Collection):
@@ -46,7 +46,10 @@ def scrape_and_persist(collection: Collection):
 
 
 if __name__ == "__main__":
-    print("Scraping Items 🕷️")
+    configure_logging()
+    logger.info("Scraping Items 🕷️")
     db = DB().connect()
-    scrape_and_persist(db.get_items_collection())
-    db.disconnect()
+    try:
+        scrape_and_persist(db.get_items_collection())
+    finally:
+        db.disconnect()
