@@ -7,8 +7,10 @@ from scraper.scrape_items import scrape_and_persist as scrape_items
 if __name__ == "__main__":
     print("Running scraper 🕷️")
     db = DB().connect()
-    scrape_champions(db.get_champions_collection())
-    scrape_comps(db.get_comps_collection())
-    scrape_items(db.get_items_collection())
-    trigger_webhook_if_set()
-    db.disconnect()
+    try:
+        scrape_champions(db.get_champions_collection())
+        scrape_comps(db.get_comps_collection(), db.get_champions_collection())
+        scrape_items(db.get_items_collection())
+        trigger_webhook_if_set()
+    finally:
+        db.disconnect()

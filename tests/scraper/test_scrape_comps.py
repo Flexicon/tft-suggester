@@ -5,7 +5,12 @@ import responses
 from common.models.champion import Champion
 from common.models.comp import Comp, Item, ItemRecommendation
 from scraper.constants import TFTBaseURL
-from scraper.scrape_comps import TFTCompsURL, scrape_and_persist, scrape_comps
+from scraper.scrape_comps import (
+    TFTCompsURL,
+    load_traits_lookup,
+    scrape_and_persist,
+    scrape_comps,
+)
 
 from tests.scraper.test_helpers import load_mock_file
 
@@ -129,3 +134,89 @@ def test_scrape_and_persist_leaves_collection_untouched_when_empty():
 
     collection.drop.assert_not_called()
     collection.insert_many.assert_not_called()
+
+
+def test_load_traits_lookup_reads_persisted_champions():
+    champions_collection = Mock()
+    champions_collection.find.return_value = [
+        {"name": "Alistar", "traits": ["Golden Ox", "Bruiser"]},
+        {"name": "Annie", "traits": ["Golden Ox", "A.M.P."]},
+        {"name": "NoTraits"},
+    ]
+
+    traits_lookup = load_traits_lookup(champions_collection)
+
+    assert traits_lookup == {
+        "Alistar": ["Golden Ox", "Bruiser"],
+        "Annie": ["Golden Ox", "A.M.P."],
+        "NoTraits": [],
+    }
+
+
+@responses.activate
+def test_scrape_and_persist_reuses_traits_from_champions_collection(request):
+    responses.add(
+        responses.GET,
+        TFTCompsURL,
+        body=load_mock_file(request, "mock_comps.html"),
+        status=200,
+    )
+    champions_collection = Mock()
+    champions_collection.find.return_value = [
+        {"name": "Alistar", "traits": ["Golden Ox", "Bruiser"]},
+        {"name": "Annie", "traits": ["Golden Ox", "A.M.P."]},
+    ]
+    collection = Mock()
+
+    with patch("scraper.scrape_comps.persist") as persist_mock:
+        scrape_and_persist(collection, champions_collection)
+
+    assert len(responses.calls) == 1, "Expected no champion detail page requests"
+    comps = persist_mock.call_args.args[1]
+    assert [champion.traits for champion in comps[0].champions] == [
+        ["Golden Ox", "Bruiser"],
+        ["Golden Ox", "A.M.P."],
+    ]
+
+
+@responses.activate
+def test_scrape_comps_reuses_traits_lookup(request):
+    responses.add(
+        responses.GET,
+        TFTCompsURL,
+        body=load_mock_file(request, "mock_comps.html"),
+        status=200,
+    )
+    traits_lookup = {
+        "Alistar": ["Golden Ox", "Bruiser"],
+        "Annie": ["Golden Ox", "A.M.P."],
+    }
+
+    comps = scrape_comps(traits_lookup=traits_lookup)
+
+    assert [champion.traits for champion in comps[0].champions] == [
+        ["Golden Ox", "Bruiser"],
+        ["Golden Ox", "A.M.P."],
+    ]
+    assert len(responses.calls) == 1, "Expected no champion detail page requests"
+
+
+@responses.activate
+def test_scrape_comps_fetches_traits_missing_from_lookup(request):
+    responses.add(
+        responses.GET,
+        TFTCompsURL,
+        body=load_mock_file(request, "mock_comps.html"),
+        status=200,
+    )
+    responses.add(
+        responses.GET,
+        f"{TFTBaseURL}/champions/annie/",
+        body=load_mock_file(request, "mock_annie.html"),
+        status=200,
+    )
+
+    comps = scrape_comps(traits_lookup={"Alistar": ["Golden Ox", "Bruiser"]})
+
+    assert comps[0].champions[0].traits == ["Golden Ox", "Bruiser"]
+    assert comps[0].champions[1].traits == ["Golden Ox", "A.M.P."]

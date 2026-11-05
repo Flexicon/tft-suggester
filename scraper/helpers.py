@@ -1,6 +1,6 @@
 import os
 import re
-from typing import cast
+from typing import Mapping, Optional, cast
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -22,14 +22,26 @@ def clear_traits_cache() -> None:
     traits_cache.clear()
 
 
-def build_champion_from_character(character: Tag) -> Champion:
-    traits = _scrape_traits_for_character(character)
+def build_champion_from_character(
+    character: Tag, traits_lookup: Optional[Mapping[str, list[str]]] = None
+) -> Champion:
     img_tag = require_tag(character, "img")
     name = str(img_tag["alt"])
     icon = str(img_tag["src"])
     cost = _price_from_character_class(" ".join(character["class"]))
+    traits = _resolve_traits(character, name, traits_lookup)
 
     return Champion(name=name, image=icon, cost=cost, traits=traits)
+
+
+def _resolve_traits(
+    character: Tag,
+    name: str,
+    traits_lookup: Optional[Mapping[str, list[str]]],
+) -> list[str]:
+    if traits_lookup is not None and name in traits_lookup:
+        return list(traits_lookup[name])
+    return _scrape_traits_for_character(character)
 
 
 def _scrape_traits_for_character(character: Tag) -> list[str]:
