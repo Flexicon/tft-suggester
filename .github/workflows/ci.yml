@@ -12,6 +12,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - uses: psf/black@stable
+        with:
+          # Keep CI aligned with the version pinned in requirements.txt.
+          version: "25.11.0"
 
   test:
     runs-on: ubuntu-latest
