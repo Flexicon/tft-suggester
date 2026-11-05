@@ -4,7 +4,13 @@ import re
 
 from pydantic.main import BaseModel
 
-from cdragon.base import BASE_URL, CDRAGON_CDN, asset_url, cached_session
+from cdragon.base import (
+    BASE_URL,
+    CDRAGON_CDN,
+    REQUEST_TIMEOUT,
+    asset_url,
+    cached_session,
+)
 from common.models import CompositeItem, Item as SimpleItem
 
 ITEMS_URL = f"{BASE_URL}/v1/tftitems.json"
@@ -29,7 +35,7 @@ class Item(BaseModel):
 def get_items() -> List[Item]:
     """Fetch all current items available in game. Results are cached for a time."""
     with cached_session() as session:
-        res = session.get(ITEMS_URL)
+        res = session.get(ITEMS_URL, timeout=REQUEST_TIMEOUT)
     res.raise_for_status()  # raises an error for 4xx or 5xx responses
 
     return [Item(**item) for item in map(_map_item_dict, res.json())]
@@ -64,7 +70,7 @@ def get_composite_items() -> List[CompositeItem]:
     and a list of component Items. Results are cached for a time.
     """
     with cached_session() as session:
-        res = session.get(TFT_DATA_URL)
+        res = session.get(TFT_DATA_URL, timeout=REQUEST_TIMEOUT)
     res.raise_for_status()
 
     data = res.json()

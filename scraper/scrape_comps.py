@@ -1,5 +1,3 @@
-import requests
-
 from typing import List
 
 from bs4 import BeautifulSoup
@@ -14,6 +12,7 @@ from scraper.helpers import (
     require_tag,
     require_tag_by_class,
 )
+from scraper.http_client import get
 
 TFTCompsURL = f"{TFTBaseURL}/tierlist/team-comps"
 TEAM_NAME_CLASS = "team-name-elipsis"
@@ -22,7 +21,7 @@ TEAM_PLAYSTYLE_CLASS = "team-playstyle"
 
 def scrape_comps() -> List[Comp]:
     print(f"Fetching comps from: {TFTCompsURL}")
-    res = requests.get(TFTCompsURL)
+    res = get(TFTCompsURL)
     res.raise_for_status()
 
     teams = BeautifulSoup(res.text, "html.parser").find_all(

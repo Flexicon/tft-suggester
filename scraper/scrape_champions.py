@@ -1,5 +1,3 @@
-import requests
-
 from typing import List
 
 from bs4 import BeautifulSoup
@@ -9,6 +7,7 @@ from common.models import Champion
 from common.db import DB
 from scraper.constants import TFTBaseURL
 from scraper.helpers import build_champion_from_character
+from scraper.http_client import get
 
 TFTChampionsURL = f"{TFTBaseURL}/champions/"
 ChampionsSelector = ".characters-list > .characters-item"
@@ -16,7 +15,7 @@ ChampionsSelector = ".characters-list > .characters-item"
 
 def scrape_champions() -> List[Champion]:
     print(f"Fetching champions from: {TFTChampionsURL}")
-    res = requests.get(TFTChampionsURL)
+    res = get(TFTChampionsURL)
     res.raise_for_status()
 
     characters = BeautifulSoup(res.text, "html.parser").select(ChampionsSelector)

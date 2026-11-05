@@ -1,8 +1,11 @@
 import pytest
+import requests
+import responses
 
 from scraper.helpers import (
     _extract_traits_from_character_html,
     _price_from_character_class,
+    trigger_webhook_if_set,
 )
 
 
@@ -51,6 +54,34 @@ def test_extract_traits_falls_back_to_section_labels():
     traits = _extract_traits_from_character_html(html)
 
     assert traits == ["Golden Ox"]
+
+
+def test_trigger_webhook_is_noop_when_unset(monkeypatch):
+    monkeypatch.delenv("DATA_FETCHED_WEBHOOK", raising=False)
+
+    trigger_webhook_if_set()
+
+
+@responses.activate
+def test_trigger_webhook_posts_when_set(monkeypatch):
+    webhook = "https://example.com/hooks/data-fetched"
+    monkeypatch.setenv("DATA_FETCHED_WEBHOOK", webhook)
+    responses.add(responses.POST, webhook, status=204)
+
+    trigger_webhook_if_set()
+
+    assert len(responses.calls) == 1
+    assert responses.calls[0].request.url == webhook
+
+
+@responses.activate
+def test_trigger_webhook_raises_when_it_fails(monkeypatch):
+    webhook = "https://example.com/hooks/data-fetched"
+    monkeypatch.setenv("DATA_FETCHED_WEBHOOK", webhook)
+    responses.add(responses.POST, webhook, status=500)
+
+    with pytest.raises(requests.exceptions.HTTPError):
+        trigger_webhook_if_set()
 
 
 def load_mock_file(request, filename):
