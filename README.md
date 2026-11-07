@@ -33,7 +33,7 @@ tftactics.gg / Community Dragon
 
 Requirements:
 
-- Python 3.9.7+
+- Python 3.15+
 - Docker 20.10+
 - [uv](https://github.com/astral-sh/uv?tab=readme-ov-file#uv)
 

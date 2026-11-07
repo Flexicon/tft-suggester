@@ -1,6 +1,6 @@
 import os
 import pytest
-from testcontainers.mongodb import MongoDbContainer
+from testcontainers.community.mongodb import MongoDbContainer
 
 from starlette.status import HTTP_200_OK
 from starlette.testclient import TestClient

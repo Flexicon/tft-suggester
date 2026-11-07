@@ -1,8 +1,10 @@
-FROM python:3.9-alpine
+FROM python:3.15-slim
 
 WORKDIR /app
 
-RUN apk --no-cache add curl
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
