@@ -1,6 +1,6 @@
 beautifulsoup4==4.15.0
 black==25.11.0
-fastapi==0.116.0
+fastapi==0.162.0
 httpx==0.28.1
 pydantic==2.11.7
 pymongo==4.15.3
