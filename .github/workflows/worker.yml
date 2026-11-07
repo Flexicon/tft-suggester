@@ -5,10 +5,6 @@ on:
 
 name: worker
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: flexicon/tft-suggester/worker
-
 jobs:
   scrape_champions:
     uses: ./.github/workflows/run_scraper.yml
