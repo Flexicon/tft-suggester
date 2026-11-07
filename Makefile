@@ -2,7 +2,7 @@
 
 dev:
 	docker compose up -d mongo
-	uv venv --python 3.9 .venv
+	uv venv --python 3.15 .venv
 	uv pip install -r requirements.txt
 	cp .env.dist .env
 	sed -i "" 's/@mongo:/@127.0.0.1:/' .env

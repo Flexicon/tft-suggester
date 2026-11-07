@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from pymongo.errors import OperationFailure
-from testcontainers.mongodb import MongoDbContainer
+from testcontainers.community.mongodb import MongoDbContainer
 
 from common.db import DB
 from common.db.db import replace_collection
