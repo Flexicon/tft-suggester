@@ -1,4 +1,4 @@
-beautifulsoup4==4.13.4
+beautifulsoup4==4.15.0
 black==25.11.0
 fastapi==0.116.0
 httpx==0.28.1
